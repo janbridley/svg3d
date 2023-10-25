@@ -1,5 +1,6 @@
 *.svg
 __pycache__
+*.egg-info
 
 *.ipynb
 svgs/
