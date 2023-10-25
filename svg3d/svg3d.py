@@ -142,6 +142,7 @@ class Engine:
         return group
 
     def _sort_back_to_front(self, faces):
+        # TODO - centroids are not correct - but maybe projection makes this ok?
         z_centroids = -np.sum(faces[:, :, 2], axis=1)
         for face_index in range(len(z_centroids)):
             z_centroids[face_index] /= len(faces[face_index])

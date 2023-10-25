@@ -6,4 +6,4 @@ import os.path as path, sys
 package_path = path.dirname(path.abspath(getsourcefile(lambda:0)))
 package_path = package_path[:package_path.rfind(path.sep)]
 sys.path.insert(0, package_path)
-import svg3d
+import svg3d.svg3d as svg3d

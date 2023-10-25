@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools","wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "svg3d"
+version = "0.1.0"
+requires-python = ">=3.8"
+description = "Tools for rendering 3D solids as SVG."
+readme = "README.md"
+authors = [
+    {name = "Jen Bradley", email = "jenbrad@umich.edu"}
+]
+dependencies = ["numpy>=1.19.0","rowan>=1.2.0","pyrr","svgwrite","coxeter","typing"]
+keywords = ["geometry"]
+
+
+[tool.setuptools]
+packages=["svg3d"]

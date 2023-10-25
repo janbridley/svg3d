@@ -1,4 +1,4 @@
-import numpy, svg3d, pyrr, math
+import numpy, svg3d.svg3d as svg3d, pyrr, math
 
 
 def get_octahedron_faces():
