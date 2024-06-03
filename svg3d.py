@@ -167,6 +167,14 @@ class View(NamedTuple):
             look_at, projection, scene, viewport if viewport is not None else Viewport()
         )
 
+    @classmethod
+    def isometric(cls, scene, fov: float = 1.0):
+        return cls(
+            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=[100, 100, 100]),
+            projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
+            scene=scene,
+        )
+
 
 class Engine:
     def __init__(self, views, precision=5):
