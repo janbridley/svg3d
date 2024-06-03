@@ -308,52 +308,6 @@ class Engine:
         return np.argsort(z_centroids)
 
 
-if __name__ == "__main__":
-    from coxeter.families import ArchimedeanFamily, PlatonicFamily
-
-    ArchimedeanFamily, PlatonicFamily
-
-    style = {
-        "fill": "yellow",
-        "fill_opacity": "0.75",
-        "stroke": "black",
-        "stroke_linejoin": "round",
-        "stroke_width": "0.005",
-    }
-
-    filename = "test.svg"
-    size = (512, 512)
-    min_x, min_y, width, height = -0.5, -0.5, 1.0, 1.0
-    view_box = np.asarray([min_x, min_y, width, height])
-
-    pos_object = [0, 0, 0]  # Shape centroid.  "at" in openGL terms
-    pos_camera = 20 * np.array([5, 4, 3])  # Camera position. "eye" in openGL terms
-    vec_up = [0, 0, 1]
-
-    z_near, z_far, fov_y = 100, 1000, 1.0
-
-    poly = ArchimedeanFamily.get_shape("Truncated Cube")
-    poly = PlatonicFamily.get_shape("Cube")
-    poly.volume = 1
-    poly.centroid = [0, 0, 0]
-
-    s2 = np.sqrt(2)
-    s3 = np.sqrt(3)
-
-    print(
-        "lookat\n", get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up).round(12)
-    )
-
-    mesh = Mesh.from_poly(poly, style=style)
-    view = View.from_look_at_and_projection(
-        look_at=get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up),
-        projection=get_projection_matrix(z_near=z_near, z_far=z_far, fov_y=fov_y),
-        # projection=np.array([[2,0,0,0],[0,2,0,0],[0,0,-2,0],[-1,-1,-1,1]]),
-        scene=[mesh],
-    )
-
-    Engine([view]).render(filename)
-
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
