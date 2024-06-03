@@ -129,15 +129,35 @@ class Viewport(NamedTuple):
         return cls(*args)
 
 
-class Mesh(NamedTuple):
-    poly: "coxeter.shapes.ConvexPolyhedron" = None
-    shader: Callable[[int, float], dict] = None
-    style: dict = None
-    circle_radius: float = 0
+class Mesh:
+    def __init__(
+        self,
+        poly: "coxeter.shapes.ConvexPolyhedron" | None = None,
+        shader: Callable[[int, float], dict] | None = None,
+        style: dict | None = None,
+        circle_radius: float = 0.0,
+    ):
+        self.poly = poly
+        self.shader = shader
+        self.style = style
+        self.circle_radius = circle_radius
+        self._faces = None
 
     @property
     def faces(self):
-        return self.poly.vertices[_pad_arrays(self.poly.faces)]
+        if self._faces is None:
+            if self.poly is None:
+                msg = (
+                    "Faces cannot be automatically generated without setting `poly`."
+                    "Set `faces` or `poly` before continuing!"
+                )
+                raise KeyError(msg)
+            self._faces = self.poly.vertices[_pad_arrays(self.poly.faces)]
+        return self._faces
+
+    @faces.setter
+    def faces(self, faces):
+        self._faces = faces
 
     @property
     def centroid(self):
@@ -146,6 +166,12 @@ class Mesh(NamedTuple):
     @classmethod
     def from_poly(cls, poly, shader=None, style=None):
         return cls(poly=poly, shader=shader, style=style)
+
+    @classmethod
+    def from_faces(cls, faces, shader=None, style=None):
+        new = cls(poly=None, shader=shader, style=style)
+        new.faces = faces
+        return new
 
 
 class View(NamedTuple):
