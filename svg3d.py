@@ -160,17 +160,34 @@ class View(NamedTuple):
         look_at: np.ndarray,
         projection: np.ndarray,
         scene: tuple[Mesh],
-        viewport: Viewport | None = None,
     ):
         assert look_at.shape == (4, 4) and projection.shape == (4, 4)
         return cls(
-            look_at, projection, scene, viewport if viewport is not None else Viewport()
+            look_at,
+            projection,
+            scene,
         )
 
     @classmethod
     def isometric(cls, scene, fov: float = 1.0):
         return cls(
             look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=[100, 100, 100]),
+            projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
+            scene=scene,
+        )
+
+    @classmethod
+    def dimetric(cls, scene, fov: float = 1.0):
+        return cls(
+            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=[40, 40, 105]),
+            projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
+            scene=scene,
+        )
+
+    @classmethod
+    def trimetric(cls, scene, fov: float = 1.0):
+        return cls(
+            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=[80, 40, 120]),
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
             scene=scene,
         )
