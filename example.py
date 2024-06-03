@@ -1,46 +1,42 @@
-import numpy, svg3d, pyrr, math
+from coxeter.families import ArchimedeanFamily
+
+import svg3d
+from svg3d import get_lookat_matrix, get_projection_matrix
 
 
-def get_octahedron_faces():
-    f = math.sqrt(2.0) / 2.0
-    verts = numpy.float32(
-        [(0, -1, 0), (-f, 0, f), (f, 0, f), (f, 0, -f), (-f, 0, -f), (0, 1, 0)]
-    )
-    triangles = numpy.int32(
-        [
-            (0, 2, 1),
-            (0, 3, 2),
-            (0, 4, 3),
-            (0, 1, 4),
-            (5, 1, 2),
-            (5, 2, 3),
-            (5, 3, 4),
-            (5, 4, 1),
-        ]
-    )
-    return 15.0 * verts[triangles]
+def generate_svg(filename, poly):
+    pos_object = [0.0, 0.0, 0.0]  # "at" position
+    pos_camera = [40, 40, 120]  # "eye" position
+    vec_up = [0.0, 1.0, 0.0]  # "up" vector of camera. This is the default value.
 
+    z_near, z_far = 1.0, 200.0
+    aspect = 1.0  # Aspect ratio of the view cone
+    fov_y = 1.0  # Opening angle of the view cone. fov_x is equal to fov_y * aspect
 
-def generate_svg(filename):
-    view = pyrr.matrix44.create_look_at(
-        eye=[50, 40, 120], target=[0, 0, 0], up=[0, 1, 0]
-    )
-    projection = pyrr.matrix44.create_perspective_projection(
-        fovy=15, aspect=1, near=10, far=200
-    )
-    camera = svg3d.Camera(view, projection)
-
-    style = dict(
-        fill="white",
-        fill_opacity="0.75",
-        stroke="black",
-        stroke_linejoin="round",
-        stroke_width="0.005",
+    look_at = get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up)
+    projection = get_projection_matrix(
+        z_near=z_near, z_far=z_far, fov_y=fov_y, aspect=aspect
     )
 
-    mesh = svg3d.Mesh(get_octahedron_faces(), style=style)
-    view = svg3d.View(camera, svg3d.Scene([mesh]))
+    # A "scene" is a list of Mesh objects, which can be easily generated from Coxeter!
+    scene = [svg3d.Mesh.from_poly(poly, style=style)]
+
+    view = svg3d.View.from_look_at_and_projection(
+        look_at=look_at,
+        projection=projection,
+        scene=scene,
+    )
+
     svg3d.Engine([view]).render(filename)
 
 
-generate_svg("octahedron.svg")
+style = dict(
+    fill="#00B2A6",
+    fill_opacity="0.85",
+    stroke="black",
+    stroke_linejoin="round",
+    stroke_width="0.005",
+)
+
+truncated_cube = ArchimedeanFamily.get_shape("Truncated Cube")
+generate_svg(filename="truncated_cube.svg", poly=truncated_cube)
