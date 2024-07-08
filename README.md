@@ -4,6 +4,19 @@ This is a single-file Python library for generating 3D wireframes in SVG format.
 For a description of how the library was initially designed and implemented, check out
 [this blog post](https://prideout.net/blog/svg_wireframes/#using-the-api).
 
+## Installation
+
+```bash
+
+    # Clone the repository
+    git clone https://github.com/janbridley/svg3d.git
+    cd svg3d
+
+    # Install to your python environment!
+    python -m pip install .
+
+```
+
 ## Usage example (ConvexPolyhedron)
 ```python
 from coxeter.families import ArchimedeanFamily
