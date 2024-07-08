@@ -1,4 +1,17 @@
-*.svg
-*.png
-*.pxd
-__pycache__
+# Packaging and distribution
+*.egg
+*.egg-info*
+*.whl
+dist
+build
+
+# Compiled files
+__pycache__/
+*.pyc
+*.out
+
+# Development tooling
+.hypothesis/
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
