@@ -85,7 +85,7 @@ style = dict(
 
 scene = [
     svg3d.Mesh.from_poly(
-        poly=ArchimedeanFamily.get_shape("Truncated Cube"), 
+        poly=ArchimedeanFamily.get_shape("Truncated Cube"),
         style=style
     )
 ]
