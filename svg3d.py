@@ -132,7 +132,7 @@ class Viewport(NamedTuple):
 class Mesh:
     def __init__(
         self,
-        poly: type("coxeter.shapes.ConvexPolyhedron") | None = None,  # noqa: F821
+        poly: str | None = None,  # noqa: F821
         shader: Callable[[int, float], dict] | None = None,
         style: dict | None = None,
         circle_radius: float = 0.0,
