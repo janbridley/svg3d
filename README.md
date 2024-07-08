@@ -104,8 +104,7 @@ for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
 
 ```
 
-<p float="left">
-  <img src="doc/svgs/iso.svg" alt="Isometric View" width="256" />
-  <img src="doc/svgs/dim.svg" alt="Dimetric View" width="256" />
-  <img src="doc/svgs/tri.svg" alt="Trimetric View" width="256" />
-</p>
+| Isometric | Dimetric | Trimetric |
+|-----------|----------|-----------|
+| ![Isometric Image](doc/svgs/iso.svg) | ![Dimetric Image](doc/svgs/dim.svg) | ![Trimetric Image](doc/svgs/tri.svg) |
+
