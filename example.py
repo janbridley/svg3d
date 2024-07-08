@@ -30,13 +30,13 @@ def generate_svg(filename, poly):
     svg3d.Engine([view]).render(filename)
 
 
-style = dict(
-    fill="#00B2A6",
-    fill_opacity="0.85",
-    stroke="black",
-    stroke_linejoin="round",
-    stroke_width="0.005",
-)
+style = {
+    "fill": "#00B2A6",
+    "fill_opacity": "0.85",
+    "stroke": "black",
+    "stroke_linejoin": "round",
+    "stroke_width": "0.005",
+}
 
 truncated_cube = ArchimedeanFamily.get_shape("Truncated Cube")
 generate_svg(filename="truncated_cube.svg", poly=truncated_cube)

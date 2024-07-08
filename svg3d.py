@@ -56,10 +56,10 @@ def get_lookat_matrix(
     m_camera_translate = np.eye(4)
     m_camera_translate[-1, :3] -= pos_camera
 
-    # Now, rotate the vector from the camera position to the object position such that it
-    # lines up with the z axis.
+    # Now, rotate the vector from the camera position to the object position such that
+    # it lines up with the z axis.
 
-    # Compute the x axis of our original coordinate system, along the vector camera - pos
+    # Compute the x axis of our original coordinates along the vector [camera - pos]
     axis_z = np.asarray(pos_camera, dtype=np.float64) - pos_object
     axis_z /= np.linalg.norm(axis_z)  # "forward" axis in openGL terms
 
@@ -132,7 +132,7 @@ class Viewport(NamedTuple):
 class Mesh:
     def __init__(
         self,
-        poly: "coxeter.shapes.ConvexPolyhedron" | None = None,
+        poly: "coxeter.shapes.ConvexPolyhedron" | None = None,  # noqa: F821
         shader: Callable[[int, float], dict] | None = None,
         style: dict | None = None,
         circle_radius: float = 0.0,
