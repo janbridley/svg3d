@@ -96,7 +96,7 @@ dim = svg3d.View.dimetric(scene, fov=1.0)
 tri = svg3d.View.trimetric(scene, fov=1.0)
 
 
-for view, view_type in zip([iso, dim, tri], ["iso","dim","tri"]):
+for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
 
     svg3d.Engine([view]).render(f"{view_type}.svg")
 
