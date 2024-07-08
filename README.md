@@ -65,7 +65,7 @@ generate_svg(filename="truncated_cube.svg", poly=truncated_cube)
 
 Running the code above generates the following image:
 
-![Output for the first example.](truncated_cube.svg)
+![Output for the first example.](doc/svgs/truncated_cube.svg)
 
 And that's all it takes! For an even simpler startup, use one of the built in viewports.
 
