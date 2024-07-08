@@ -74,10 +74,38 @@ For example:
 ```python
 import svg3d
 
-scene = [svg3d.Mesh.from_poly(poly, style=style)]
 
+style = dict(
+    fill="#00B2A6",
+    fill_opacity="0.85",
+    stroke="black",
+    stroke_linejoin="round",
+    stroke_width="0.005",
+)
+
+scene = [
+    svg3d.Mesh.from_poly(
+        poly=ArchimedeanFamily.get_shape("Truncated Cube"), 
+        style=style
+    )
+]
+
+# Convenience views: isometric, dimetric, and trimetric
 iso = svg3d.View.isometric(scene, fov=1.0)
 dim = svg3d.View.dimetric(scene, fov=1.0)
 tri = svg3d.View.trimetric(scene, fov=1.0)
 
+
+for view, view_type in zip([iso, dim, tri], ["iso","dim","tri"]):
+
+    svg3d.Engine([view]).render(f"{view_type}.svg")
+
+
+
 ```
+
+<p float="left">
+  <img src="image1.png" alt="Image 1" width="200" />
+  <img src="image2.png" alt="Image 2" width="200" />
+  <img src="image3.png" alt="Image 3" width="200" />
+</p>
