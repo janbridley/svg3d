@@ -18,6 +18,9 @@ dependencies = ["numpy>=1.19", "svgwrite", "coxeter"]
 Source = "https://github.com/janbridley/svg3d"
 Issues = "https://github.com/janbridley/svg3d/issues"
 
+[tool.setuptools]
+py-modules = ["svg3d"]
+
 [tool.ruff]
 include = ["*.py", "*.ipynb"]
 line-length = 88
