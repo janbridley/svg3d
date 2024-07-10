@@ -195,25 +195,28 @@ class View(NamedTuple):
         )
 
     @classmethod
-    def isometric(cls, scene, fov: float = 1.0):
+    def isometric(cls, scene, fov: float = 1.0, distance: float = 100.0):
+        camera_position = np.array([1, 1, 1]) / math.sqrt(3) * distance
         return cls(
-            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=[100, 100, 100]),
+            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=camera_position),
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
             scene=scene,
         )
 
     @classmethod
-    def dimetric(cls, scene, fov: float = 1.0):
+    def dimetric(cls, scene, fov: float = 1.0, distance: float = 100.0):
+        camera_position = np.array([8, 8, 21]) / math.sqrt(569) * distance
         return cls(
-            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=[40, 40, 105]),
+            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=camera_position),
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
             scene=scene,
         )
 
     @classmethod
-    def trimetric(cls, scene, fov: float = 1.0):
+    def trimetric(cls, scene, fov: float = 1.0, distance: float = 100.0):
+        camera_position = np.array([1 / 7, 1 / 14, 3 / 14]) * math.sqrt(14) * distance
         return cls(
-            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=[80, 40, 120]),
+            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=camera_position),
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
             scene=scene,
         )
