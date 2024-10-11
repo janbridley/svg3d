@@ -7,6 +7,7 @@
 
 import math
 from typing import Callable, NamedTuple
+import warnings
 
 import numpy as np
 import svgwrite
@@ -158,10 +159,10 @@ class Mesh:
         # These will be an array of [N, (0-1,1-2)=2, 3] vertices
         face_edge_vectors = np.diff(face_simplices, axis=1)
 
-        # The linter is unhappy, but this is correct
-        return np.cross(
-            *np.split(face_edge_vectors, face_edge_vectors.shape[1], axis=1)
-        ).squeeze()
+        # The LSP is unhappy, but this is correct. Each face has exactly 2 edge vectors
+        normals = np.cross(*np.split(face_edge_vectors, 2, axis=1)).squeeze()
+
+        return normals / np.linalg.norm(normals)  # Return normalized
 
     @classmethod
     def from_coxeter(
@@ -178,6 +179,8 @@ class View(NamedTuple):
     projection: np.ndarray
     scene: tuple[Mesh]
     viewport: Viewport = Viewport()
+
+    DEFAULT_OBJECT_POSITION = np.zeros(3)
 
     @classmethod
     def from_look_at_and_projection(
@@ -197,7 +200,9 @@ class View(NamedTuple):
     def isometric(cls, scene, fov: float = 1.0, distance: float = 100.0):
         camera_position = np.array([1, 1, 1]) / math.sqrt(3) * distance
         return cls(
-            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=camera_position),
+            look_at=get_lookat_matrix(
+                pos_object=cls.DEFAULT_OBJECT_POSITION, pos_camera=camera_position
+            ),
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
             scene=scene,
         )
@@ -206,23 +211,27 @@ class View(NamedTuple):
     def dimetric(cls, scene, fov: float = 1.0, distance: float = 100.0):
         camera_position = np.array([8, 8, 21]) / math.sqrt(569) * distance
         return cls(
-            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=camera_position),
+            look_at=get_lookat_matrix(
+                pos_object=cls.DEFAULT_OBJECT_POSITION, pos_camera=camera_position
+            ),
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
             scene=scene,
         )
 
     @classmethod
     def trimetric(cls, scene, fov: float = 1.0, distance: float = 100.0):
-        camera_position = np.array([1 / 7, 1 / 14, 3 / 14]) * math.sqrt(14) * distance
+        # camera_position = np.array([1 / 7, 1 / 14, 3 / 14]) * math.sqrt(14) * distance
         return cls(
-            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=[80, 40, 120]),
+            look_at=get_lookat_matrix(
+                pos_object=cls.DEFAULT_OBJECT_POSITION, pos_camera=[80.0, 40.0, 120.0]
+            ),
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
             scene=scene,
         )
 
 
 class Engine:
-    def __init__(self, views, precision=5):
+    def __init__(self, views, precision=7):
         self._views = views
         self._precision = precision
 
@@ -260,7 +269,7 @@ class Engine:
 
     def _create_group(self, drawing, projection, viewport, mesh):
         faces = mesh.faces
-        shader = mesh.shader or (lambda face_index, winding: {})
+        shader = mesh.shader or (lambda face_index, mesh: {})
         default_style = mesh.style or {}
 
         # Extend each point to a vec4, then transform to clip space.
@@ -278,7 +287,11 @@ class Engine:
 
         faces = np.compress(accepted, faces, axis=0)
         if len(faces) == 0:
-            raise ValueError("All faces were pruned! Check your projection matrix.")
+            warnings.warn(
+                "All faces were pruned! Check your projection matrix.",
+                RuntimeWarnings,
+                stacklevel=2,
+            )
 
         # Apply perspective transformation.
         xyz, w = faces[:, :, :3], faces[:, :, 3:]
@@ -295,11 +308,10 @@ class Engine:
         faces[:, :, 1:2] += viewport.miny
 
         # Compute the winding direction of each polygon.
-        windings = np.zeros(faces.shape[0])
-        if faces.shape[1] >= 3:
-            p0, p1, p2 = faces[:, 0, :], faces[:, 1, :], faces[:, 2, :]
-            normals = np.cross(p2 - p0, p1 - p0)
-            np.copyto(windings, normals[:, 2])
+        # windings = np.zeros(faces.shape[0])
+        # if faces.shape[1] >= 3:
+        #     normals = np.compress(accepted, mesh.normals, axis=0)
+        #     np.copyto(windings, normals[:, 2])
 
         group = drawing.g(**default_style)
 
@@ -317,7 +329,7 @@ class Engine:
 
         # Create polygons and lines.
         for face_index, face in enumerate(faces):
-            style = shader(face_indices[face_index], mesh)  # windings[face_index])
+            style = shader(face_indices[face_index], mesh)
             if style is None:
                 continue
             face = np.around(face[:, :2], self.precision)
@@ -363,14 +375,14 @@ BASE_COLOR = "#71618D"
 base_style = {}
 
 
-def shader(face_index, mesh, BASE_COLOR="#71618D"):
+def shader(face_index, mesh, base_color="#71618D"):
     mesh = mesh.faces
 
     # TODO
     normal = mesh.normals[face_index] / np.linalg.norm(mesh.normals[face_index])
     shading = np.dot(normal, _directional_light)
 
-    new_color = _apply_shading(BASE_COLOR, shading, factor=0.6)
+    new_color = _apply_shading(base_color, shading, factor=0.6)
 
     return base_style | {"fill": new_color}
 
