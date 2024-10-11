@@ -18,6 +18,7 @@ For a description of how the library was initially designed and implemented, che
 ```
 
 ## Usage example (ConvexPolyhedron)
+
 ```python
 from coxeter.families import ArchimedeanFamily
 
@@ -107,4 +108,3 @@ for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
 | Isometric | Dimetric | Trimetric |
 |-----------|----------|-----------|
 | ![Isometric Image](doc/svgs/iso.svg) | ![Dimetric Image](doc/svgs/dim.svg) | ![Trimetric Image](doc/svgs/tri.svg) |
-
