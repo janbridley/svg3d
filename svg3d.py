@@ -132,27 +132,18 @@ class Viewport(NamedTuple):
 class Mesh:
     def __init__(
         self,
-        poly: str | None = None,  # noqa: F821
+        faces,  #: list[np.ndarray],
         shader: Callable[[int, float], dict] | None = None,
         style: dict | None = None,
         circle_radius: float = 0.0,
     ):
-        self.poly = poly
-        self.shader = shader
-        self.style = style
-        self.circle_radius = circle_radius
-        self._faces = None
+        self._faces = _pad_arrays(faces)
+        self._shader = shader
+        self._style = style
+        self._circle_radius = circle_radius
 
     @property
     def faces(self):
-        if self._faces is None:
-            if self.poly is None:
-                msg = (
-                    "Faces cannot be automatically generated without setting `poly`."
-                    "Set `faces` or `poly` before continuing!"
-                )
-                raise KeyError(msg)
-            self._faces = self.poly.vertices[_pad_arrays(self.poly.faces)]
         return self._faces
 
     @faces.setter
@@ -160,18 +151,26 @@ class Mesh:
         self._faces = faces
 
     @property
-    def centroid(self):
-        return self.poly.centroid if self.poly is not None else (0, 0, 0)
+    def normals(self):
+        face_simplices = self.faces[:, :3]
+
+        # Convert each simplex (3 points) into two edge vectors (each 2 points)
+        # These will be an array of [N, (0-1,1-2)=2, 3] vertices
+        face_edge_vectors = np.diff(face_simplices, axis=1)
+
+        # The linter is unhappy, but this is correct
+        return np.cross(
+            *np.split(face_edge_vectors, face_edge_vectors.shape[1], axis=1)
+        ).squeeze()
 
     @classmethod
-    def from_poly(cls, poly, shader=None, style=None):
-        return cls(poly=poly, shader=shader, style=style)
-
-    @classmethod
-    def from_faces(cls, faces, shader=None, style=None):
-        new = cls(poly=None, shader=shader, style=style)
-        new.faces = faces
-        return new
+    def from_coxeter(
+        cls,
+        poly: "coxeter.shapes.ConvexPolyhedron",  # noqa: F821
+        shader=None,
+        style=None,
+    ):
+        return cls(faces=poly.faces, shader=shader, style=style)
 
 
 class View(NamedTuple):
@@ -216,7 +215,7 @@ class View(NamedTuple):
     def trimetric(cls, scene, fov: float = 1.0, distance: float = 100.0):
         camera_position = np.array([1 / 7, 1 / 14, 3 / 14]) * math.sqrt(14) * distance
         return cls(
-            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=camera_position),
+            look_at=get_lookat_matrix(pos_object=[0, 0, 0], pos_camera=[80, 40, 120]),
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
             scene=scene,
         )
@@ -308,7 +307,7 @@ class Engine:
         if mesh.circle_radius > 0:
             print("Drawing circles")
             for face_index, face in enumerate(faces):
-                style = shader(face_indices[face_index], 0)
+                style = shader(face_indices[face_index], mesh)
                 if style is None:
                     continue
                 face = np.around(face[:, :2], self.precision)
@@ -318,7 +317,7 @@ class Engine:
 
         # Create polygons and lines.
         for face_index, face in enumerate(faces):
-            style = shader(face_indices[face_index], windings[face_index])
+            style = shader(face_indices[face_index], mesh)  # windings[face_index])
             if style is None:
                 continue
             face = np.around(face[:, :2], self.precision)
@@ -335,6 +334,45 @@ class Engine:
         for face_index in range(len(z_centroids)):
             z_centroids[face_index] /= len(faces[face_index])
         return np.argsort(z_centroids)
+
+
+_directional_light = np.array([2, 2, 1]) / 2
+
+
+def _hex2rgb(hexc):
+    hexc = hexc.lstrip("#")
+    return np.array([int(hexc[i : i + 2], 16) for i in (0, 2, 4)]) / 255.0
+
+
+def _rgb2hex(rgb):
+    rgb = (rgb * 255).astype(int)
+    return "#{:02x}{:02x}{:02x}".format(*rgb).upper()
+
+
+def _apply_shading(base_color, shading, factor=0.5):
+    # `shading` is a value between -1 and 1
+    # factor controls how much lighter/darker we go from the base color
+    base_rgb = _hex2rgb(base_color)
+    shaded_color = base_rgb + factor * shading * (np.ones(3) - base_rgb)
+
+    shaded_color = np.clip(shaded_color, 0, 1)  # Ensure RGB values are within [0, 1]
+    return _rgb2hex(shaded_color)
+
+
+BASE_COLOR = "#71618D"
+base_style = {}
+
+
+def shader(face_index, mesh, BASE_COLOR="#71618D"):
+    mesh = mesh.faces
+
+    # TODO
+    normal = mesh.normals[face_index] / np.linalg.norm(mesh.normals[face_index])
+    shading = np.dot(normal, _directional_light)
+
+    new_color = _apply_shading(BASE_COLOR, shading, factor=0.6)
+
+    return base_style | {"fill": new_color}
 
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
