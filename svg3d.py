@@ -6,8 +6,8 @@
 
 
 import math
-from typing import Callable, NamedTuple
 import warnings
+from typing import Callable, NamedTuple
 
 import numpy as np
 import svgwrite
@@ -152,6 +152,14 @@ class Mesh:
         self._faces = faces
 
     @property
+    def shader(self):
+        return self._shader
+
+    @shader.setter
+    def shader(self, shader):
+        self._shader = shader
+
+    @property
     def normals(self):
         face_simplices = self.faces[:, :3]
 
@@ -177,7 +185,7 @@ class Mesh:
 class View(NamedTuple):
     look_at: np.ndarray
     projection: np.ndarray
-    scene: tuple[Mesh]
+    scene: tuple[Mesh] | list[Mesh]
     viewport: Viewport = Viewport()
 
     DEFAULT_OBJECT_POSITION = np.zeros(3)
