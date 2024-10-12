@@ -7,10 +7,13 @@
 
 import math
 import warnings
-from typing import Callable, NamedTuple
+from typing import TYPE_CHECKING, Callable, NamedTuple
 
 import numpy as np
 import svgwrite
+
+if TYPE_CHECKING:
+    import coxeter
 
 
 def _pad_arrays(arrays):
@@ -318,7 +321,7 @@ class Engine:
         if len(faces) == 0:
             warnings.warn(
                 "All faces were pruned! Check your projection matrix.",
-                RuntimeWarnings,
+                RuntimeWarning,
                 stacklevel=2,
             )
 
