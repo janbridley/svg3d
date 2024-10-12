@@ -12,7 +12,8 @@ from typing import TYPE_CHECKING, Callable, NamedTuple
 import numpy as np
 import svgwrite
 
-if TYPE_CHECKING: import coxeter
+if TYPE_CHECKING:
+    import coxeter
 
 
 def _pad_arrays(arrays):

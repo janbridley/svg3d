@@ -6,7 +6,8 @@ SEED = 13579
 
 
 @pytest.fixture
-def rng(): return np.random.default_rng(seed=SEED)
+def rng():
+    return np.random.default_rng(seed=SEED)
 
 
 @pytest.fixture
