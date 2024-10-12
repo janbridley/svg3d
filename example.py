@@ -31,7 +31,7 @@ def generate_svg(filename, poly):
 
 
 style = {
-    "fill": "#00B2A6",
+    "fill": "#71618D",
     "fill_opacity": "0.85",
     "stroke": "black",
     "stroke_linejoin": "round",
