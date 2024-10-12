@@ -19,9 +19,10 @@ def _pad_arrays(arrays):
 
     # Pad each array to the length of the longest array
     padded_array = [
-        np.append(arr, [arr[0]] * (max_length - len(arr))) for arr in arrays
+        np.concatenate((arr, np.full((max_length - len(arr), 3), arr[0])), axis=0)
+        for arr in arrays
     ]
-    return np.array(padded_array, dtype=int)
+    return np.array(padded_array)
 
 
 def get_lookat_matrix(
@@ -133,7 +134,7 @@ class Viewport(NamedTuple):
 class Mesh:
     def __init__(
         self,
-        faces,  #: list[np.ndarray],
+        faces: list[np.ndarray],
         shader: Callable[[int, float], dict] | None = None,
         style: dict | None = None,
         circle_radius: float = 0.0,
@@ -160,6 +161,22 @@ class Mesh:
         self._shader = shader
 
     @property
+    def style(self):
+        return self._style
+
+    @style.setter
+    def style(self, shader):
+        self._shader = shader
+
+    @property
+    def circle_radius(self):
+        return self._circle_radius
+
+    @circle_radius.setter
+    def circle_radius(self, circle_radius):
+        self._circle_radius = circle_radius
+
+    @property
     def normals(self):
         face_simplices = self.faces[:, :3]
 
@@ -175,11 +192,15 @@ class Mesh:
     @classmethod
     def from_coxeter(
         cls,
-        poly: "coxeter.shapes.ConvexPolyhedron",  # noqa: F821
+        poly: "coxeter.shapes.ConvexPolyhedron",
         shader=None,
         style=None,
-    ):
-        return cls(faces=poly.faces, shader=shader, style=style)
+    ):  # noqa: F821
+        return cls(
+            faces=[poly.vertices[face] for face in poly.faces],
+            shader=shader,
+            style=style,
+        )
 
 
 class View(NamedTuple):
@@ -325,7 +346,6 @@ class Engine:
 
         # Create circles.
         if mesh.circle_radius > 0:
-            print("Drawing circles")
             for face_index, face in enumerate(faces):
                 style = shader(face_indices[face_index], mesh)
                 if style is None:
