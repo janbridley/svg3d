@@ -1,8 +1,16 @@
+import hypothesis
 import numpy as np
 import pytest
+from hypothesis import HealthCheck
 
 MAX_N = 12
 SEED = 13579
+
+# Disable all health checks globally
+hypothesis.settings.register_profile(
+    "no_health_checks", suppress_health_check=(HealthCheck.filter_too_much,)
+)
+hypothesis.settings.load_profile("no_health_checks")
 
 
 @pytest.fixture

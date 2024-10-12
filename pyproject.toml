@@ -18,7 +18,6 @@ dynamic = ["optional-dependencies"]
 [tool.setuptools.dynamic]
 optional-dependencies = {tests = { file = ["tests/requirements.txt"] }}
 
-
 [project.urls]
 Source = "https://github.com/janbridley/svg3d"
 Issues = "https://github.com/janbridley/svg3d/issues"
@@ -49,3 +48,15 @@ convention = "google"
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+
+[tool.pytest.ini_options]
+# Additional command line options for pytest
+addopts = "--doctest-modules -p coxeter.__doctest_fixtures"
+doctest_optionflags = "NORMALIZE_WHITESPACE ELLIPSIS"
+# Add percentage progress bar to the pytest console output
+console_output_style = "progress"
+# Specify the tests folder to speed up collection.
+testpaths = ["tests"]
+# Disable hypothesis health checks - these are frustrating at best
+# hypothesis-suppress_health_check = ["filter_too_much"]
