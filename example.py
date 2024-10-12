@@ -39,4 +39,4 @@ style = {
 }
 
 truncated_cube = ArchimedeanFamily.get_shape("Truncated Cube")
-generate_svg(filename="truncated_cube.svg", poly=truncated_cube)
+generate_svg(filename="doc/svgs/truncated_cube.svg", poly=truncated_cube)
