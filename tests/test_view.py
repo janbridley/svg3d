@@ -2,6 +2,7 @@ import numpy as np
 import numpy.testing as npt
 import pyrr
 import pytest
+from conftest import filter_invalid_arrays
 from hypothesis import given
 from hypothesis.extra.numpy import arrays
 from hypothesis.strategies import floats
@@ -17,11 +18,12 @@ PRECISION = 1e-12  # Small deviations are OK given the rigor of hypothesis testi
     "vec_up", [(0, 1, 0), (1, 0, 0), (0, 0, 1), (123.0, -45, 0.0001)]
 )
 @given(
-    pos=arrays(
-        np.float64,
-        (2, 3),
-        elements=floats(PRECISION, 100, allow_nan=False, exclude_min=True),
-    ).filter(lambda x: (np.linalg.norm(x[0] - x[1]) > MIN_VALID_DISTANCE)),
+    pos=arrays(np.float64, (2, 3), elements=floats(-100, 100)).filter(
+        lambda x: (
+            (np.linalg.norm(x[0] - x[1]) > MIN_VALID_DISTANCE)
+            and filter_invalid_arrays(x, PRECISION)
+        )
+    ),
 )
 def test_get_lookat_matrix(pos, vec_up):
     pos_object, pos_camera = pos

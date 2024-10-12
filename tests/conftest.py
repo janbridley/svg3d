@@ -22,3 +22,10 @@ def random_ragged_array(rng):
         return arrays
 
     return generate_ragged_array()
+
+
+def filter_invalid_arrays(arr, min_value):
+    """Return False for arrays containing nonzero numbers smaller than a min_value."""
+    # if np.any((np.abs(arr) < min_value) & (arr != np.zeros_like(arr))):
+    #     print(arr)
+    return not np.any((np.abs(arr) < min_value) & (arr != np.zeros_like(arr)))
