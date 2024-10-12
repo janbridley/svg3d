@@ -28,6 +28,7 @@ line-length = 88
 [tool.ruff.lint]
 select = ["B","E","F","I","N","S","W","C4","UP","NPY","SIM","PIE790","PIE794"]
 ignore = [
+  "E701", # For a small library, one liner if statements are fine
   "S101", # Assertions are a good thing
   "D105", # Magic methods don't require documentation.
   "D107", # __init__ methods don't require documentation.
