@@ -1,22 +1,9 @@
 import math
-from typing import TYPE_CHECKING, Callable, NamedTuple
+from typing import NamedTuple
 
 import numpy as np
 
-if TYPE_CHECKING:
-    import coxeter
-
-
-def _pad_arrays(arrays):
-    # Find the length of the longest array
-    max_length = max(len(arr) for arr in arrays)
-
-    # Pad each array to the length of the longest array
-    padded_array = [
-        np.concatenate((arr, np.full((max_length - len(arr), 3), arr[0])), axis=0)
-        for arr in arrays
-    ]
-    return np.array(padded_array)
+from .svg3d import Mesh
 
 
 def get_lookat_matrix(
@@ -123,78 +110,6 @@ class Viewport(NamedTuple):
     def from_string(cls, string_to_parse: str):
         args = [float(f) for f in string_to_parse.split()]
         return cls(*args)
-
-
-class Mesh:
-    def __init__(
-        self,
-        faces: list[np.ndarray],
-        shader: Callable[[int, float], dict] | None = None,
-        style: dict | None = None,
-        circle_radius: float = 0.0,
-    ):
-        self._faces = _pad_arrays(faces)
-        self._shader = shader
-        self._style = style
-        self._circle_radius = circle_radius
-
-    @property
-    def faces(self):
-        return self._faces
-
-    @faces.setter
-    def faces(self, faces):
-        self._faces = faces
-
-    @property
-    def shader(self):
-        return self._shader
-
-    @shader.setter
-    def shader(self, shader):
-        self._shader = shader
-
-    @property
-    def style(self):
-        return self._style
-
-    @style.setter
-    def style(self, shader):
-        self._shader = shader
-
-    @property
-    def circle_radius(self):
-        return self._circle_radius
-
-    @circle_radius.setter
-    def circle_radius(self, circle_radius):
-        self._circle_radius = circle_radius
-
-    @property
-    def normals(self):
-        face_simplices = self.faces[:, :3]
-
-        # Convert each simplex (3 points) into two edge vectors (each 2 points)
-        # These will be an array of [N, (0-1,1-2)=2, 3] vertices
-        face_edge_vectors = np.diff(face_simplices, axis=1)
-
-        # The LSP is unhappy, but this is correct. Each face has exactly 2 edge vectors
-        normals = np.cross(*np.split(face_edge_vectors, 2, axis=1)).squeeze()
-
-        return normals / np.linalg.norm(normals)  # Return normalized
-
-    @classmethod
-    def from_coxeter(
-        cls,
-        poly: "coxeter.shapes.ConvexPolyhedron",
-        shader=None,
-        style=None,
-    ):  # noqa: F821
-        return cls(
-            faces=[poly.vertices[face] for face in poly.faces],
-            shader=shader,
-            style=style,
-        )
 
 
 class View:
