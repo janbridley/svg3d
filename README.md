@@ -17,7 +17,57 @@ python -m pip install .
 
 ```
 
-## Usage example (ConvexPolyhedron)
+
+## Quickstart Example
+
+`svg3d` provides convenience `View` options for standard rendering perspectives -
+isometric, dimetric, and trimetric. Shapes can be easily created from coxeter objects,
+or from raw mesh data.
+
+```python
+
+from coxeter.families import ArchimedeanFamily
+
+import svg3d
+
+
+style = dict(
+    fill="#00B2A6",
+    fill_opacity="0.85",
+    stroke="black",
+    stroke_linejoin="round",
+    stroke_width="0.005",
+)
+
+scene = [
+    svg3d.Mesh.from_coxeter(
+        truncated_cube, style=style, shader=svg3d.shaders.diffuse_lighting
+    )
+]
+
+# Convenience views: isometric, dimetric, and trimetric
+iso = svg3d.View.isometric(scene, fov=1.0)
+dim = svg3d.View.dimetric(scene, fov=1.0)
+tri = svg3d.View.trimetric(scene, fov=1.0)
+
+
+for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
+
+    svg3d.Engine([view]).render(f"doc/svgs/{view_type}.svg")
+
+
+
+```
+
+| Isometric | Dimetric | Trimetric |
+|-----------|----------|-----------|
+| ![Isometric Image](doc/svgs/iso.svg) | ![Dimetric Image](doc/svgs/dim.svg) | ![Trimetric Image](doc/svgs/tri.svg) |
+
+
+For finer control over the viewport and settings, use the following built-in methods to generate
+OpenGL-style perspective and view matrixes.
+
+## Usage example (Coxeter Shapes)
 
 ```python
 from coxeter.families import ArchimedeanFamily
@@ -70,41 +120,3 @@ Running the code above generates the following image, using a simple dot-product
 ![Output for the first example.](doc/svgs/truncated_cube.svg)
 
 And that's all it takes! For an even simpler startup, use one of the built in viewports.
-
-For example:
-
-```python
-import svg3d
-
-
-style = dict(
-    fill="#00B2A6",
-    fill_opacity="0.85",
-    stroke="black",
-    stroke_linejoin="round",
-    stroke_width="0.005",
-)
-
-scene = [
-    svg3d.Mesh.from_coxeter(
-        truncated_cube, style=style, shader=svg3d.shaders.diffuse_lighting
-    )
-]
-
-# Convenience views: isometric, dimetric, and trimetric
-iso = svg3d.View.isometric(scene, fov=1.0)
-dim = svg3d.View.dimetric(scene, fov=1.0)
-tri = svg3d.View.trimetric(scene, fov=1.0)
-
-
-for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
-
-    svg3d.Engine([view]).render(f"doc/svgs/{view_type}.svg")
-
-
-
-```
-
-| Isometric | Dimetric | Trimetric |
-|-----------|----------|-----------|
-| ![Isometric Image](doc/svgs/iso.svg) | ![Dimetric Image](doc/svgs/dim.svg) | ![Trimetric Image](doc/svgs/tri.svg) |
