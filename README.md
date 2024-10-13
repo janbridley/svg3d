@@ -85,7 +85,7 @@ style = dict(
 )
 
 scene = [
-    svg3d.Mesh.from_poly(
+    svg3d.Mesh.from_coxeter(
         poly=ArchimedeanFamily.get_shape("Truncated Cube"),
         style=style
     )
@@ -99,7 +99,7 @@ tri = svg3d.View.trimetric(scene, fov=1.0)
 
 for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
 
-    svg3d.Engine([view]).render(f"{view_type}.svg")
+    svg3d.Engine([view]).render(f"doc/svgs/{view_type}.svg")
 
 
 
