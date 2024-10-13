@@ -206,11 +206,18 @@ class Mesh:
         )
 
 
-class View(NamedTuple):
-    look_at: np.ndarray
-    projection: np.ndarray
-    scene: tuple[Mesh] | list[Mesh]
-    viewport: Viewport = Viewport()
+class View:
+    def __init__(
+        self,
+        look_at: np.ndarray,
+        projection: np.ndarray,
+        scene: tuple[Mesh] | list[Mesh],
+        viewport=None,
+    ):
+        self._look_at = look_at
+        self._projection = projection
+        self._scene = scene
+        self._viewport = viewport if viewport is not None else Viewport()
 
     DEFAULT_OBJECT_POSITION = np.zeros(3)
     ISOMETRIC_VIEW_MATRIX = [
@@ -219,6 +226,38 @@ class View(NamedTuple):
         [np.sqrt(2), -np.sqrt(2), np.sqrt(2), 0],
         [0, 0, 0, np.sqrt(6)],
     ] / np.sqrt(6)
+
+    @property
+    def look_at(self):
+        return self._look_at
+
+    @look_at.setter
+    def look_at(self, value: np.ndarray):
+        self._look_at = value
+
+    @property
+    def projection(self):
+        return self._projection
+
+    @projection.setter
+    def projection(self, value: np.ndarray):
+        self._projection = value
+
+    @property
+    def scene(self):
+        return self._scene
+
+    @scene.setter
+    def scene(self, value: tuple[Mesh] | list[Mesh]):
+        self._scene = value
+
+    @property
+    def viewport(self):
+        return self._viewport
+
+    @viewport.setter
+    def viewport(self, value):
+        self._viewport = value
 
     @classmethod
     def from_look_at_and_projection(
