@@ -26,6 +26,11 @@ PRECISION = 1e-12  # Small deviations are OK given the rigor of hypothesis testi
     ),
 )
 def test_get_lookat_matrix(pos, vec_up):
+    """
+    Extensive configuration is required for this test to remove extreme degenerate
+    hypothesis cases. For all 'reasonable' inputs, the results are equal to machine
+    precision.
+    """
     pos_object, pos_camera = pos
 
     npt.assert_allclose(
@@ -35,5 +40,18 @@ def test_get_lookat_matrix(pos, vec_up):
     )
 
 
-def test_get_projection_matrix():
-    assert get_projection_matrix
+@given(
+    z_near=floats(MIN_VALID_DISTANCE, 100, exclude_min=True),
+    z_far_distance=floats(MIN_VALID_DISTANCE, 100, exclude_min=True),
+    fov_y=floats(MIN_VALID_DISTANCE, 180, exclude_min=True, exclude_max=True),
+    aspect=floats(1 / 100, 100),
+)
+def test_get_projection_matrix(z_near, z_far_distance, fov_y, aspect):
+    z_far = z_near + z_far_distance
+    npt.assert_allclose(
+        get_projection_matrix(z_near, z_far, fov_y, aspect),
+        pyrr.matrix44.create_perspective_projection_matrix(
+            fov_y, aspect, z_near, z_far
+        ),
+        atol=PRECISION,
+    )
