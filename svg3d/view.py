@@ -131,7 +131,7 @@ class View:
         [np.sqrt(3), -1, np.sqrt(2), 0],
         [0, 2, np.sqrt(2), 0],
         [-np.sqrt(3), -1, np.sqrt(2), 0],
-        [0, 0, -100, np.sqrt(6)],
+        [0, 0, -100 * np.sqrt(6), np.sqrt(6)],
     ] / np.sqrt(6)
 
     @property
@@ -183,21 +183,10 @@ class View:
     @classmethod
     def isometric(cls, scene, fov: float = 1.0, distance: float = 100.0):
         # Equivalent to a 45 degree rotation about the X axis and an atan(1/sqrt(2))
-        # degree rotation about the Y axis
-
-        camera_position = np.array([1, 1, 1]) / math.sqrt(3) * distance
-        # Equivalent to a 45 degree rotation about the X axis and an atan(1/sqrt(2))
         # degree rotation about the z axis
-        print(
-            "LOOKAT: \n",
-            get_lookat_matrix(
-                pos_object=cls.DEFAULT_OBJECT_POSITION, pos_camera=camera_position
-            ).round(14),
-        )
-
         isometric_view = cls.ISOMETRIC_VIEW_MATRIX
         isometric_view[-1, 2] = -distance
-        print(isometric_view)
+
         return cls(
             look_at=isometric_view,
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),

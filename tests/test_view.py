@@ -62,8 +62,9 @@ def test_isometric_view():
     isometric_view_matrix = np.eye(4)
     isometric_view_matrix[:3, :3] = (
         rowan.to_matrix(rowan.from_axis_angle([0, 1, 0], np.pi / 4))  # y-up convention
-        @ rowan.to_matrix(rowan.from_axis_angle([1, 0, 0], np.atan(1 / np.sqrt(2))))
-    ).T
+        @ rowan.to_matrix(rowan.from_axis_angle([1, 0, 0], -np.atan(1 / np.sqrt(2))))
+    )
+    isometric_view_matrix[-1, 2] = -100
 
     npt.assert_allclose(
         View.ISOMETRIC_VIEW_MATRIX, isometric_view_matrix, atol=PRECISION
