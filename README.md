@@ -1,6 +1,6 @@
 This is a simple Python library for generating 3D wireframes in SVG format, and a
 reimagining of the excellent [original library](https://prideout.net/blog/svg_wireframes/#using-the-api)
-with the same name, with a more general interface and a somewhat different scope. For a
+with the same name, with a more general interface, new features, and a somewhat different scope. For a
 description of how the original was designed and implemented, check out
 [this blog post](https://prideout.net/blog/svg_wireframes/#using-the-api).
 
