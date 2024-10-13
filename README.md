@@ -1,3 +1,8 @@
+<div>
+   <img src='doc/svgs/teapot-tri.svg' alt='Stanford Teapot' width='20%'/>
+</div>
+
+
 This is a simple Python library for generating 3D wireframes in SVG format, and a
 reimagining of the excellent [original library](https://prideout.net/blog/svg_wireframes/#using-the-api)
 with the same name, with a more general interface, new features, and a somewhat different scope. For a
