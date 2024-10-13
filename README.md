@@ -8,12 +8,12 @@ description of how the original was designed and implemented, check out
 
 ```bash
 
-    # Clone the repository
-    git clone https://github.com/janbridley/svg3d.git
-    cd svg3d
+# Clone the repository
+git clone https://github.com/janbridley/svg3d.git
+cd svg3d
 
-    # Install to your python environment!
-    python -m pip install .
+# Install to your python environment!
+python -m pip install .
 
 ```
 
