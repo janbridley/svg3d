@@ -23,10 +23,9 @@ def _apply_shading(base_color, shading, factor=0.5):
     return rgb2hex(shaded_color)
 
 
-def diffuse_shader(
+def diffuse_lighting(
     face_index, mesh, light_direction=None, base_style=None, base_color="#71618D"
 ):
-    mesh = mesh.faces
     base_style = base_style if base_style is not None else {}
     light_direction = light_direction if light_direction is not None else DEFAULT_LIGHT
 

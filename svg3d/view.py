@@ -138,32 +138,32 @@ class View:
         return self._look_at
 
     @look_at.setter
-    def look_at(self, value: np.ndarray):
-        self._look_at = value
+    def look_at(self, look_at: np.ndarray):
+        self._look_at = look_at
 
     @property
     def projection(self):
         return self._projection
 
     @projection.setter
-    def projection(self, value: np.ndarray):
-        self._projection = value
+    def projection(self, projection: np.ndarray):
+        self._projection = projection
 
     @property
     def scene(self):
         return self._scene
 
     @scene.setter
-    def scene(self, value: tuple[Mesh] | list[Mesh]):
-        self._scene = value
+    def scene(self, scene: tuple[Mesh] | list[Mesh]):
+        self._scene = scene
 
     @property
     def viewport(self):
         return self._viewport
 
     @viewport.setter
-    def viewport(self, value):
-        self._viewport = value
+    def viewport(self, viewport):
+        self._viewport = viewport
 
     @classmethod
     def from_look_at_and_projection(

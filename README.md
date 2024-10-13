@@ -86,8 +86,7 @@ style = dict(
 
 scene = [
     svg3d.Mesh.from_coxeter(
-        poly=ArchimedeanFamily.get_shape("Truncated Cube"),
-        style=style
+        truncated_cube, style=style, shader=svg3d.shaders.diffuse_lighting
     )
 ]
 
