@@ -64,7 +64,8 @@ truncated_cube = ArchimedeanFamily.get_shape("Truncated Cube")
 generate_svg(filename="truncated_cube.svg", poly=truncated_cube)
 ```
 
-Running the code above generates the following image:
+Running the code above generates the following image, using a simple dot-product
+(diffuse) lighting model included in `svg3d.shaders`:
 
 ![Output for the first example.](doc/svgs/truncated_cube.svg)
 
