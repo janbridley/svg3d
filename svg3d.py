@@ -213,6 +213,7 @@ class View(NamedTuple):
     viewport: Viewport = Viewport()
 
     DEFAULT_OBJECT_POSITION = np.zeros(3)
+    ISOMETRIC_VIEW_MATRIX = np.sqrt([[3, 0, -3], [1, 4, 1], [2, -2, 2]]) / np.sqrt(6)
 
     @classmethod
     def from_look_at_and_projection(
@@ -230,11 +231,10 @@ class View(NamedTuple):
 
     @classmethod
     def isometric(cls, scene, fov: float = 1.0, distance: float = 100.0):
-        camera_position = np.array([1, 1, 1]) / math.sqrt(3) * distance
+        # Equivalent to a 45 degree rotation about the X axis and an atan(1/sqrt(2))
+        # degree rotation about the z axis
         return cls(
-            look_at=get_lookat_matrix(
-                pos_object=cls.DEFAULT_OBJECT_POSITION, pos_camera=camera_position
-            ),
+            look_at=cls.ISOMETRIC_VIEW_MATRIX,
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
             scene=scene,
         )
