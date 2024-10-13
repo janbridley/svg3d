@@ -15,15 +15,15 @@ authors = [
 dependencies = ["numpy>=1.19", "svgwrite"]
 dynamic = ["optional-dependencies"]
 
-[tool.setuptools.dynamic]
-optional-dependencies = {tests = { file = ["tests/requirements.txt"] }}
-
 [project.urls]
 Source = "https://github.com/janbridley/svg3d"
 Issues = "https://github.com/janbridley/svg3d/issues"
 
 [tool.setuptools]
-py-modules = ["svg3d"]
+packages = ["svg3d"]
+
+[tool.setuptools.dynamic]
+optional-dependencies = {tests = { file = ["tests/requirements.txt"] }}
 
 [tool.ruff]
 include = ["*.py", "*.ipynb"]
