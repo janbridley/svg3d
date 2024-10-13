@@ -213,7 +213,12 @@ class View(NamedTuple):
     viewport: Viewport = Viewport()
 
     DEFAULT_OBJECT_POSITION = np.zeros(3)
-    ISOMETRIC_VIEW_MATRIX = np.sqrt([[3, 0, -3], [1, 4, 1], [2, -2, 2]]) / np.sqrt(6)
+    ISOMETRIC_VIEW_MATRIX = [
+        [np.sqrt(3), 0, -np.sqrt(3), 0],
+        [1, 2, 1, 0],
+        [np.sqrt(2), -np.sqrt(2), np.sqrt(2), 0],
+        [0, 0, 0, np.sqrt(6)],
+    ] / np.sqrt(6)
 
     @classmethod
     def from_look_at_and_projection(

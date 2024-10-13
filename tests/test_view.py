@@ -2,12 +2,13 @@ import numpy as np
 import numpy.testing as npt
 import pyrr
 import pytest
+import rowan
 from conftest import filter_invalid_arrays
 from hypothesis import given
 from hypothesis.extra.numpy import arrays
 from hypothesis.strategies import floats
 
-from svg3d import get_lookat_matrix, get_projection_matrix
+from svg3d import View, get_lookat_matrix, get_projection_matrix
 
 MIN_VALID_DISTANCE = 1e-12
 PRECISION = 1e-12  # Small deviations are OK given the rigor of hypothesis testing
@@ -54,4 +55,16 @@ def test_get_projection_matrix(z_near, z_far_distance, fov_y, aspect):
             fov_y, aspect, z_near, z_far
         ),
         atol=PRECISION,
+    )
+
+
+def test_isometric_view():
+    isometric_view_matrix = np.eye(4)
+    isometric_view_matrix[:3, :3] = (
+        rowan.to_matrix(rowan.from_axis_angle([0, 1, 0], np.pi / 4))  # y-up convention
+        @ rowan.to_matrix(rowan.from_axis_angle([1, 0, 0], np.atan(1 / np.sqrt(2))))
+    ).T
+
+    npt.assert_allclose(
+        View.ISOMETRIC_VIEW_MATRIX, isometric_view_matrix, atol=PRECISION
     )
