@@ -64,10 +64,11 @@ for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
 | ![Isometric Image](doc/svgs/iso.svg) | ![Dimetric Image](doc/svgs/dim.svg) | ![Trimetric Image](doc/svgs/tri.svg) |
 
 
+## Usage Example
+
+
 For finer control over the viewport and settings, use the following built-in methods to generate
 OpenGL-style perspective and view matrixes.
-
-## Usage example (Coxeter Shapes)
 
 ```python
 from coxeter.families import ArchimedeanFamily
