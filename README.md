@@ -1,7 +1,7 @@
-This is a single-file Python library for generating 3D wireframes in SVG format. We aim to create a framework for rendering shapes (and arrays of shapes) as vector graphics in a performant and pythonic way. This code is adapted from [the original svg3d](https://github.com/prideout/svg3d) for compatibility with [coxeter](https://github.com/glotzerlab/coxeter) and to simplify the interface.
-
-
-For a description of how the library was initially designed and implemented, check out
+This is a single-file Python library for generating 3D wireframes in SVG format, and a
+reimagining of the excellent [original library](https://prideout.net/blog/svg_wireframes/#using-the-api)
+with the same name, with a more general interface and a somewhat different scope. For a
+description of how the original was designed and implemented, check out
 [this blog post](https://prideout.net/blog/svg_wireframes/#using-the-api).
 
 ## Installation
