@@ -246,6 +246,7 @@ class View(NamedTuple):
 
     @classmethod
     def dimetric(cls, scene, fov: float = 1.0, distance: float = 100.0):
+        # TODO: reimplement as https://faculty.sites.iastate.edu/jia/files/inline-files/projection-classify.pdf
         camera_position = np.array([8, 8, 21]) / math.sqrt(569) * distance
         return cls(
             look_at=get_lookat_matrix(
@@ -257,10 +258,10 @@ class View(NamedTuple):
 
     @classmethod
     def trimetric(cls, scene, fov: float = 1.0, distance: float = 100.0):
-        # camera_position = np.array([1 / 7, 1 / 14, 3 / 14]) * math.sqrt(14) * distance
+        camera_position = np.array([1 / 7, 1 / 14, 3 / 14]) * math.sqrt(14) * distance
         return cls(
             look_at=get_lookat_matrix(
-                pos_object=cls.DEFAULT_OBJECT_POSITION, pos_camera=[80.0, 40.0, 120.0]
+                pos_object=cls.DEFAULT_OBJECT_POSITION, pos_camera=camera_position
             ),
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
             scene=scene,
