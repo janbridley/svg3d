@@ -35,6 +35,7 @@ class Mesh:
         circle_radius: float = 0.0,
     ):
         self._faces = _pad_arrays(faces)
+        self._compute_normals()
         self._shader = shader
         self._style = style
         self._circle_radius = circle_radius
