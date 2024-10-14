@@ -1,13 +1,10 @@
 <div>
-   <img src='doc/svgs/oloid_64-tri-compact.svg' alt='Keenan Oloid' width='20%'/>
    <img src='doc/svgs/CrumpledDevelopable-tri-compact.svg' alt='Keenan CrumpledDevelopable' width='20%'/>
-   <img src='doc/svgs/teapot-tri.svg' alt='Stanford Teapot' width='20%'/>
+   <img src='doc/svgs/oloid_64-tri-compact.svg' alt='Keenan Oloid' width='20%'/>
+   <!-- <img src='doc/svgs/teapot-tri.svg' alt='Stanford Teapot' width='20%'/> -->
    <img src='doc/svgs/bunny-tri-compact.svg' alt='Stanford Bunny' width='20%'/>
 </div>
 
-<!-- Mesh data sources (rendered using svg3d): -->
-<!-- https://imagetostl.com/convert/file/ply/to/obj#convert -->
-<!-- https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/ -->
 
 
 This is a simple Python library for generating 3D wireframes in SVG format, and a
@@ -15,6 +12,10 @@ reimagining of the excellent [original library](https://prideout.net/blog/svg_wi
 with the same name. This version has a more general interface, new features, and a somewhat different scope. For a
 description of how the original was designed and implemented, check out
 [this blog post](https://prideout.net/blog/svg_wireframes/#using-the-api).
+
+Many thanks to the [Keenan 3D Model repository](https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/)
+and the [Georgia Tech Large Models Archive](https://sites.cc.gatech.edu/projects/large_models/)
+for the models rendered in the header image.
 
 ## Installation
 
