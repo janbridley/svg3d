@@ -12,8 +12,7 @@ license = { file = "LICENSE" }
 authors = [
     {name = "Jen Bradley", email = "jenbrad@umich.edu"},
 ]
-dependencies = ["numpy>=1.19", "svgwrite"]
-dynamic = ["optional-dependencies"]
+dynamic = ["dependencies", "optional-dependencies"]
 
 [project.urls]
 Source = "https://github.com/janbridley/svg3d"
@@ -23,6 +22,7 @@ Issues = "https://github.com/janbridley/svg3d/issues"
 packages = ["svg3d"]
 
 [tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
 optional-dependencies = {tests = { file = ["tests/requirements.txt"] }}
 
 [tool.ruff]
