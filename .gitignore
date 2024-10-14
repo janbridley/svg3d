@@ -15,3 +15,6 @@ __pycache__/
 .ipynb_checkpoints/
 .pytest_cache/
 .ruff_cache/
+
+# Example files (not distributed for copyright reasons)
+*.obj
