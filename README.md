@@ -1,6 +1,7 @@
 <div>
-   <img src='doc/svgs/teapot-tri.svg' alt='Stanford Teapot' width='20%'/>
    <img src='doc/svgs/oloid_64-tri-compact.svg' alt='Keenan Oloid' width='20%'/>
+   <img src='doc/svgs/CrumpledDevelopable-tri-compact.svg' alt='Keenan CrumpledDevelopable' width='20%'/>
+   <img src='doc/svgs/teapot-tri.svg' alt='Stanford Teapot' width='20%'/>
    <img src='doc/svgs/bunny-tri-compact.svg' alt='Stanford Bunny' width='20%'/>
 </div>
 
