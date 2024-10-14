@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 import svgwrite
+import tqdm
 
 if TYPE_CHECKING:
     import coxeter
@@ -45,6 +46,7 @@ class Mesh:
     @faces.setter
     def faces(self, faces):
         self._faces = faces
+        self._compute_normals()
 
     @property
     def shader(self):
@@ -72,6 +74,9 @@ class Mesh:
 
     @property
     def normals(self):
+        return self._normals
+
+    def _compute_normals(self):
         face_simplices = self.faces[:, :3]
 
         # Convert each simplex (3 points) into two edge vectors (each 2 points)
@@ -81,7 +86,7 @@ class Mesh:
         # The LSP is unhappy, but this is correct. Each face has exactly 2 edge vectors
         normals = np.cross(*np.split(face_edge_vectors, 2, axis=1)).squeeze()
 
-        return normals / np.linalg.norm(normals)  # Return normalized
+        self._normals = normals / np.linalg.norm(normals)  # Return normalized
 
     @classmethod
     def from_coxeter(
@@ -188,7 +193,7 @@ class Engine:
             return group
 
         # Create polygons and lines.
-        for face_index, face in enumerate(faces):
+        for face_index, face in enumerate(tqdm.tqdm(faces)):
             style = shader(face_indices[face_index], mesh)
             if style is None:
                 continue
