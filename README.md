@@ -1,6 +1,9 @@
 <div>
    <img src='doc/svgs/teapot-tri.svg' alt='Stanford Teapot' width='20%'/>
+   <img src='doc/svgs/bunny-tri-compact.svg' alt='Stanford Bunny' width='20%'/>
 </div>
+
+<!-- https://imagetostl.com/convert/file/ply/to/obj#convert -->
 
 
 This is a simple Python library for generating 3D wireframes in SVG format, and a
