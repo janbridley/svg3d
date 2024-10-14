@@ -1,9 +1,12 @@
 <div>
    <img src='doc/svgs/teapot-tri.svg' alt='Stanford Teapot' width='20%'/>
+   <img src='doc/svgs/oloid_64-tri-compact' alt='Keenan Oloid' width='20%'/>
    <img src='doc/svgs/bunny-tri-compact.svg' alt='Stanford Bunny' width='20%'/>
 </div>
 
+<!-- Mesh data sources (rendered using svg3d): -->
 <!-- https://imagetostl.com/convert/file/ply/to/obj#convert -->
+<!-- https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/ -->
 
 
 This is a simple Python library for generating 3D wireframes in SVG format, and a
