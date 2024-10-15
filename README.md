@@ -38,13 +38,13 @@ from coxeter.families import ArchimedeanFamily
 import svg3d
 
 
-style = dict(
-    fill="#00B2A6",
-    fill_opacity="0.85",
-    stroke="black",
-    stroke_linejoin="round",
-    stroke_width="0.005",
-)
+style = {
+    "fill": "#00B2A6",
+    "fill_opacity": "0.85",
+    "stroke": "black",
+    "stroke_linejoin": "round",
+    "stroke_width": "0.005",
+}
 
 scene = [
     svg3d.Mesh.from_coxeter(
@@ -80,14 +80,14 @@ import svg3d
 
 # Define the vertices and faces of a cube
 vertices = np.array(
-    [[-1, -1, -1],
-    [-1, -1,  1],
-    [-1,  1, -1],
-    [-1,  1,  1],
-    [ 1, -1, -1],
-    [ 1, -1,  1],
-    [ 1,  1, -1],
-    [ 1,  1,  1]]
+    [[-1., -1., -1.],
+    [-1., -1.,  1.],
+    [-1.,  1., -1.],
+    [-1.,  1.,  1.],
+    [ 1., -1., -1.],
+    [ 1., -1.,  1.],
+    [ 1.,  1., -1.],
+    [ 1.,  1.,  1.]]
 )
 
 faces = [
