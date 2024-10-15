@@ -9,11 +9,12 @@
 
 
 
-This is a simple Python library for generating 3D wireframes in SVG format, and a
-reimagining of the excellent [original library](https://prideout.net/blog/svg_wireframes/#using-the-api)
-with the same name. This version has a more general interface, new features, and a somewhat different scope. For a
-description of how the original was designed and implemented, check out
-[this blog post](https://prideout.net/blog/svg_wireframes/#using-the-api). For a tutorial on this new version, just keep reading!
+This is a simple Python library for generating 3D wireframes in SVG format, with applications
+wherever quality vector graphics are desired. A reimagining of the excellent
+[original library](https://prideout.net/blog/svg_wireframes/#using-the-api) with the same name,
+this version has a more general interface, new features, and a somewhat different scope.
+We aim to streamline the process of rendering scenes of geometries for scientific publications,
+providing vector-specific adaptions of common lighting models and graphical techniques.
 
 Many thanks to the [Keenan 3D Model repository](https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/)
 and the [Georgia Tech Large Models Archive](https://sites.cc.gatech.edu/projects/large_models/)
@@ -134,5 +135,3 @@ Running the code above generates the following image, using a simple dot-product
 (diffuse) lighting model included in `svg3d.shaders`:
 
 ![Output for the first example.](doc/svgs/truncated_cube.svg)
-
-And that's all it takes! For an even simpler startup, use one of the built in viewports.
