@@ -102,6 +102,20 @@ class Mesh:
             style=style,
         )
 
+    @classmethod
+    def from_vertices_and_faces(
+        cls,
+        vertices: np.ndarray[float],
+        faces: list[np.ndarray[int]],
+        shader=None,
+        style=None,
+    ):  # noqa: F821
+        return cls(
+            faces=[vertices[face] for face in faces],
+            shader=shader,
+            style=style,
+        )
+
 
 class Engine:
     def __init__(self, views, precision=7):
