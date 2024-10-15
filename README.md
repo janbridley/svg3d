@@ -82,13 +82,15 @@ for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
 
 ## Usage Example
 
-
-For finer control over the viewport and settings, use the following built-in methods to generate
-OpenGL-style perspective and view matrixes.
+While convenience methods are nice, `svg3d` allows full control over the viewport, scene
+geometry, image style, and shaders. Methods are based on OpenGL standards and nomenclature
+where possible, and images can be created from any set of vertices and faces - even from
+ragged arrays! Simply pass an array of vertices and a list of arrays (one for vertex
+indices of each face, as below) to `svg3d.Mesh.from_vertices_and_faces` to render whatever
+geometry you like. Custom shader models can be implemented as a callable that takes
 
 ```python
 import svg3d
-from svg3d import get_lookat_matrix, get_projection_matrix
 
 # Define the vertices and faces of a cube
 vertices = np.array(
@@ -120,6 +122,8 @@ style = {
     "stroke_width": "0.005",
 }
 
+empty_shader = lambda face_index, mesh: {} # Does nothing, but illustrates the shader API
+
 pos_object = [0.0, 0.0, 0.0]  # "at" position
 pos_camera = [40, 40, 120]  # "eye" position
 vec_up = [0.0, 1.0, 0.0]  # "up" vector of camera. This is the default value.
@@ -128,13 +132,15 @@ z_near, z_far = 1.0, 200.0
 aspect = 1.0  # Aspect ratio of the view cone
 fov_y = 2.0  # Opening angle of the view cone. fov_x is equal to fov_y * aspect
 
-look_at = get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up)
-projection = get_projection_matrix(
+look_at = svg3d.get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up)
+projection = svg3d.get_projection_matrix(
     z_near=z_near, z_far=z_far, fov_y=fov_y, aspect=aspect
 )
 
 # A "scene" is a list of Mesh objects, which can be easily generated from raw data
-scene = [svg3d.Mesh.from_vertices_and_faces(vertices, faces, style=style)]
+scene = [
+    svg3d.Mesh.from_vertices_and_faces(vertices, faces, style=style, shader=empty_shader)
+]
 
 view = svg3d.View.from_look_at_and_projection(
     look_at=look_at,
