@@ -40,11 +40,10 @@ jobs:
         uv pip install . --no-build-isolation --no-deps --system -v
     - name: Extract Documentation Code
       run: |
-        awk > '
-              /```python/ {in_block=1; file="README_code_block_" ++count ".py"; next}
-              /```/ {in_block=0; next}
-              in_block {print > file}
-              '
-              README.md
+        awk '
+            /```python/ {in_block=1; file="README_code_block_" ++count ".py"; next}
+            /```/ {in_block=0; next}
+            in_block {print > file}
+            ' README.md
     - name: Test Documentation Code
       run: for f in README_code*.py; do python3 "$f"; done && echo OK
