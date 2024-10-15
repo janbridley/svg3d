@@ -146,7 +146,6 @@ svg3d.Engine([view]).render("cube-wireframe.svg")
 
 ```
 
-Running the code above generates the following image, using a simple dot-product
-(diffuse) lighting model included in `svg3d.shaders`:
+Running the code above generates the following image:
 
-![Output for the first example.](doc/svgs/truncated_cube.svg)
+![Output for the first example.](doc/svgs/cube-wireframe.svg)
