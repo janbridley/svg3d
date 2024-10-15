@@ -1,4 +1,4 @@
-name: Run Unit Tests
+name: Run Doc Examples
 
 on:
   # trigger on pull requests
@@ -16,19 +16,12 @@ concurrency:
   cancel-in-progress: true
 jobs:
   test:
-    name: test (${{ matrix.os }}, ${{ matrix.python }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
-        python: ['3.10', '3.11', '3.12', '3.13']
-        include:
-          # Other tests
-          - os: 'macos-latest'
-            python: '3.10'
-          - os: 'macos-latest'
-            python: '3.13'
+        python: ['3.12']
     steps:
     - name: Checkout
       uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29  # v4.2.1
