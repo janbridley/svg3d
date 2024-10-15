@@ -19,7 +19,11 @@ def generate_svg(filename, poly):
     )
 
     # A "scene" is a list of Mesh objects, which can be easily generated from Coxeter!
-    scene = [svg3d.Mesh.from_poly(poly, style=style)]
+    scene = [
+        svg3d.Mesh.from_coxeter(
+            poly, style=style, shader=svg3d.shaders.diffuse_lighting
+        )
+    ]
 
     view = svg3d.View.from_look_at_and_projection(
         look_at=look_at,
@@ -30,13 +34,13 @@ def generate_svg(filename, poly):
     svg3d.Engine([view]).render(filename)
 
 
-style = dict(
-    fill="#00B2A6",
-    fill_opacity="0.85",
-    stroke="black",
-    stroke_linejoin="round",
-    stroke_width="0.005",
-)
+style = {
+    "fill": "#71618D",
+    "fill_opacity": "0.85",
+    "stroke": "black",
+    "stroke_linejoin": "round",
+    "stroke_width": "0.005",
+}
 
 truncated_cube = ArchimedeanFamily.get_shape("Truncated Cube")
-generate_svg(filename="truncated_cube.svg", poly=truncated_cube)
+generate_svg(filename="doc/svgs/truncated_cube.svg", poly=truncated_cube)
