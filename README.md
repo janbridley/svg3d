@@ -46,6 +46,8 @@ style = {
     "stroke_width": "0.005",
 }
 
+truncated_cube = ArchimedeanFamily.get_shape("Truncated Cube")
+
 scene = [
     svg3d.Mesh.from_coxeter(
         truncated_cube, style=style, shader=svg3d.shaders.diffuse_lighting
