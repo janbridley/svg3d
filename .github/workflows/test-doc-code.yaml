@@ -41,9 +41,9 @@ jobs:
     - name: Extract Documentation Code
       run: |
         awk '
-            /```python/ {in_block=1; file="README_code_block_" ++count ".py"; next}
+            /```python/ {in_block=1; file="README_code_block" ++count ".py"; next}
             /```/ {in_block=0; next}
             in_block {print > file}
             ' README.md
     - name: Test Documentation Code
-      run: for f in README_code*.py; do python3 "$f"; done && echo OK
+      run: for f in README_code_block*.py; do python3 "$f"; done && echo OK
