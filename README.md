@@ -9,16 +9,9 @@
 
 
 
-This is a simple Python library for generating 3D wireframes in SVG format, with applications
-wherever quality vector graphics are desired. A reimagining of the excellent
-[original library](https://prideout.net/blog/svg_wireframes/#using-the-api) with the same name,
-this version has a more general interface, new features, and a somewhat different scope.
-We aim to streamline the process of rendering scenes of geometries for scientific publications,
-providing vector-specific adaptions of common lighting models and graphical techniques.
+This is a simple Python library for generating 3D wireframes in SVG format, with applications wherever quality vector graphics are desired. A reimagining of the excellent [original library](https://prideout.net/blog/svg_wireframes/#using-the-api) with the same name, this version has a more general interface, new features, and a somewhat different scope. We aim to streamline the process of rendering scenes of geometries for scientific publications, providing vector-specific adaptions of common lighting models and graphical techniques.
 
-Many thanks to the [Keenan 3D Model repository](https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/)
-and the [Georgia Tech Large Models Archive](https://sites.cc.gatech.edu/projects/large_models/)
-for the models rendered in the header image.
+Many thanks to the [Keenan 3D Model repository](https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/) and the [Georgia Tech Large Models Archive](https://sites.cc.gatech.edu/projects/large_models/) for the models rendered in the header image.
 
 ## Installation
 
@@ -36,9 +29,7 @@ python -m pip install .
 
 ## Quickstart Example
 
-`svg3d` provides convenience `View` options for standard rendering perspectives -
-isometric, dimetric, and trimetric. Shapes can be easily created from coxeter objects,
-or from raw mesh data.
+`svg3d` provides convenience `View` options for standard rendering perspectives - isometric, dimetric, and trimetric. Shapes can be easily created from coxeter objects, or from raw mesh data.
 
 ```python
 
@@ -82,13 +73,7 @@ for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
 
 ## Usage Example
 
-While convenience methods are nice, `svg3d` allows full control over the viewport, scene
-geometry, image style, and shaders. Methods are based on OpenGL standards and nomenclature
-where possible, and images can be created from any set of vertices and faces - even from
-ragged arrays! Simply pass an array of vertices and a list of arrays (one for vertex
-indices of each face, as below) to `svg3d.Mesh.from_vertices_and_faces` to render whatever
-geometry you like. Custom shader models can be implemented as a callable that takes a face
-index and a `svg3d.Mesh` object to shade.
+In addition to convenience methods, `svg3d` allows full control over the viewport, scene geometry, image style, and shaders. Methods are based on OpenGL standards and nomenclature where possible, and images can be created from any set of vertices and faces - even from ragged arrays! Simply pass an array of vertices and a list of arrays (one for vertex indices of each face, as below) to `svg3d.Mesh.from_vertices_and_faces` to render whatever geometry you like. Custom shader models can be implemented as a callable that takes a face index and a `svg3d.Mesh` object to shade.
 
 ```python
 import svg3d
