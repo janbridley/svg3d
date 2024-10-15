@@ -78,6 +78,8 @@ for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
 In addition to convenience methods, `svg3d` allows full control over the viewport, scene geometry, image style, and shaders. Methods are based on OpenGL standards and nomenclature where possible, and images can be created from any set of vertices and faces - even from ragged arrays! Simply pass an array of vertices and a list of arrays (one for vertex indices of each face, as below) to `svg3d.Mesh.from_vertices_and_faces` to render whatever geometry you like. Custom shader models can be implemented as a callable that takes a face index and a `svg3d.Mesh` object to shade.
 
 ```python
+import numpy as np
+
 import svg3d
 
 # Define the vertices and faces of a cube
