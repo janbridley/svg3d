@@ -1,4 +1,4 @@
-<div>
+<div style="text-align: center;">
    <img src='doc/svgs/cube-wireframe.svg' alt='Cube Wireframe' width='18%'/>
    <img src='doc/svgs/cycle-compact.svg' alt='Alternation Cycle' width='18%'/>
    <img src='doc/svgs/CrumpledDevelopable-tri-compact.svg' alt='Keenan CrumpledDevelopable' width='18%'/>
