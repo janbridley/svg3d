@@ -13,6 +13,8 @@ This is a simple Python library for generating 3D wireframes in SVG format, with
 
 Many thanks to the [Keenan 3D Model repository](https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/) and the [Georgia Tech Large Models Archive](https://sites.cc.gatech.edu/projects/large_models/) for the models rendered in the header image.
 
+[![GitHub Actions](https://github.com/janbridley/svg3d/actions/workflows/run-pytest.yaml/badge.svg)](https://github.com/janbridley/svg3d/actions)
+
 ## Installation
 
 ```bash
