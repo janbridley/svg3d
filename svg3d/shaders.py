@@ -100,7 +100,25 @@ class Shader:
             Default is `[1.0, 1.0, 0.5]`.
         """
         self._base_color = base_color
+        self._base_style = None
         self._diffuse_light_direction = DEFAULT_LIGHT
+
+    @classmethod
+    def from_style_dict(cls, style: dict, light_direction = DEFAULT_LIGHT):
+        """Create a :obj:`~.Shader` instance with a style dictionary.
+
+        Parameters
+        ----------
+        style : str
+            The style dict for the :obj:`~.Shader`
+        light_direction : array or list of float, optional.
+            A 3-element iterable specifying the diffuse light direction. Default \
+            value: [1, 1, 0.5]
+        """
+        new = cls(base_color=style["fill"], light_direction=light_direction)
+        new.base_style = style
+        return new
+
 
     @classmethod
     def from_color(cls, base_color):
@@ -122,6 +140,8 @@ class Shader:
         ----------
         base_color : str
             The base color as a hexadecimal string (e.g., `#FFFFFF`).
+        light_direction : array or list of float
+            A 3-element iterable specifying the diffuse light direction.
         """
         return cls(base_color=base_color, light_direction=light_direction)
 
@@ -147,7 +167,7 @@ class Shader:
         base_style = self.base_style if self.base_style is not None else {}
 
         normal = mesh.normals[face_index] / np.linalg.norm(mesh.normals[face_index])
-        shading = np.dot(normal, self.light_direction)
+        shading = np.dot(normal, self.diffuse_light_direction)
 
         new_color = self._apply_shading(self.base_color, shading, absorbance=absorbance)
 
