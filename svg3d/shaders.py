@@ -123,7 +123,7 @@ class Shader(ABC):
 
 class DiffuseShader(Shader):
     """
-    A class to shade Mesh objects with flat, Lambertian (dot product diffuse) lighting.
+    Shade Mesh objects with per-face, Lambertian (dot product diffuse) lighting.
     """
 
     def __init__(self, base_color="#71618D", light_direction=DEFAULT_LIGHT, base_style=None):

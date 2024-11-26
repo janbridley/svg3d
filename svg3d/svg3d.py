@@ -2,7 +2,6 @@
 # Copyright (c) 2019 Philip Rideout. Modified 2024 by Jenna Bradley.
 # Distributed under the MIT License, see bottom of file.
 
-
 import warnings
 from typing import TYPE_CHECKING, Callable
 
@@ -42,6 +41,7 @@ class Mesh:
 
     @property
     def faces(self):
+        """~np.ndarray: Get or set the faces of the :obj:`~.Mesh`"""
         return self._faces
 
     @faces.setter
@@ -51,6 +51,7 @@ class Mesh:
 
     @property
     def shader(self):
+        """Callable: Get or set the :obj:`~.Shader` for the :obj:`~.Mesh`"""
         return self._shader
 
     @shader.setter
@@ -59,6 +60,7 @@ class Mesh:
 
     @property
     def style(self):
+        """dict: Get or set the style dictionary for the mesh."""
         return self._style
 
     @style.setter
@@ -75,6 +77,7 @@ class Mesh:
 
     @property
     def normals(self):
+        """np.ndarray: Get the normals for the faces of the :obj:`~.Mesh`."""
         return self._normals
 
     def _compute_normals(self):
@@ -93,9 +96,11 @@ class Mesh:
     def from_coxeter(
         cls,
         poly: "coxeter.shapes.ConvexPolyhedron",
-        shader=None,
-        style=None,
-    ):  # noqa: F821
+        shader: Callable[[int, float], dict] | None = None,
+        style: dict | None =None,
+    ):
+        """Create a :obj:`~.Mesh` object from a coxeter
+        :class:`~coxeter.shapes.ConvexPolyhedron`."""
         return cls(
             faces=[poly.vertices[face] for face in poly.faces],
             shader=shader,
@@ -107,9 +112,9 @@ class Mesh:
         cls,
         vertices: np.ndarray[float],
         faces: list[np.ndarray[int]],
-        shader=None,
-        style=None,
-    ):  # noqa: F821
+        shader: Callable[[int, float], dict] | None = None,
+        style: dict | None =None,
+    ):
         return cls(
             faces=[vertices[face] for face in faces],
             shader=shader,
@@ -118,12 +123,13 @@ class Mesh:
 
 
 class Engine:
-    def __init__(self, views, precision=7):
+    def __init__(self, views, precision=10):
         self._views = views
         self._precision = precision
 
     @property
     def views(self):
+        """list[:obj:`~.View`]: Get or set the list of views to render."""
         return self._views
 
     @views.setter
@@ -132,6 +138,11 @@ class Engine:
 
     @property
     def precision(self):
+        """int: Get or set the rounding precision for vertices of rengered polygons."""
+        return self._precision
+
+    @precision.setter
+    def precision(self, precision):
         return self._precision
 
     def render(self, filename, size=(512, 512), viewbox="-0.5 -0.5 1.0 1.0", **extra):
@@ -228,7 +239,6 @@ class Engine:
         return np.argsort(z_centroids)
 
 
-_directional_light = np.array([2, 2, 1]) / 2
 
 
 def _hex2rgb(hexc):
@@ -251,20 +261,6 @@ def _apply_shading(base_color, shading, factor=0.5):
     return _rgb2hex(shaded_color)
 
 
-BASE_COLOR = "#71618D"
-base_style = {}
-
-
-def shader(face_index, mesh, base_color="#71618D"):
-    mesh = mesh.faces
-
-    # TODO
-    normal = mesh.normals[face_index] / np.linalg.norm(mesh.normals[face_index])
-    shading = np.dot(normal, _directional_light)
-
-    new_color = _apply_shading(base_color, shading, factor=0.6)
-
-    return base_style | {"fill": new_color}
 
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
