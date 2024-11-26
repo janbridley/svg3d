@@ -84,6 +84,7 @@ def diffuse_lighting(
     return base_style | {"fill": new_color}
 
 
+
 class Shader(ABC):
     """
     Abstract base class for shaders.
@@ -96,8 +97,8 @@ class Shader(ABC):
         ----------
         base_color : str, optional
             A hexadecimal-formatted color string for the mesh. Default is "#71618D".
-        base_style: dict, optional
-            The style attribute dict for the object.
+        base_style: dict | None, optional
+            The style attribute dict for the :obj:`~.Shader`.
         """
 
         self._base_color = base_color
@@ -120,15 +121,12 @@ class Shader(ABC):
     def base_style(self, base_style: dict):
         self._base_style = base_style
 
-
 class DiffuseShader(Shader):
     """
     Shade Mesh objects with per-face, Lambertian (dot product diffuse) lighting.
     """
 
-    def __init__(
-        self, base_color="#71618D", light_direction=DEFAULT_LIGHT, base_style=None
-    ):
+    def __init__(self, base_color="#71618D", light_direction=DEFAULT_LIGHT, base_style=None):
         """Initialize the diffuse shader.
 
         Parameters
@@ -137,26 +135,29 @@ class DiffuseShader(Shader):
             A hexadecimal-formatted color string for the mesh. Default is "#71618D".
         light_direction : iterable of float, optional
             A 3-element array specifying the direction of the light source.
-            Default is [1.0, 1.0, 0.5].
+            Default is (1.0, 1.0, 0.5).
+        base_style : dict | None, optional
+            The style dict for the :obj:`~.Shader`.
         """
         super().__init__(base_color=base_color, base_style=base_style)
         self._diffuse_light_direction = np.asarray(light_direction)
 
     @classmethod
-    def from_style_dict(cls, style: dict, light_direction=DEFAULT_LIGHT):
+    def from_style_dict(cls, style: dict, light_direction = DEFAULT_LIGHT):
         """Create a :obj:`~.Shader` instance with a style dictionary.
 
         Parameters
         ----------
-        style : str
+        style : dict
             The style dict for the :obj:`~.Shader`
         light_direction : array or list of float, optional.
             A 3-element iterable specifying the diffuse light direction. Default \
-            value: [1, 1, 0.5]
+            value: (1.0, 1.0, 0.5)
         """
         new = cls(base_color=style["fill"], light_direction=light_direction)
         new.base_style = style
         return new
+
 
     @classmethod
     def from_color(cls, base_color):
