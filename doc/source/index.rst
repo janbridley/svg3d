@@ -1,11 +1,13 @@
-.. TODO: add in header and convert README.md to rst
+.. include:: ../../README.rst
+    :end-before: Usage Example
 
-.. .. toctree::
-..    :maxdepth: 2
-..    :caption: Getting Started
+.. toctree::
+   :maxdepth: 2
+   :caption: Getting Started
 
-..    installation
-..    quickstart
+   installation
+   quickstart
+   usage-example
 
 
 .. toctree::
