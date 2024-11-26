@@ -65,10 +65,10 @@ def diffuse_lighting(
     face_index, mesh, light_direction=None, base_style=None, base_color="#71618D"
 ):
     """Apply Lambertian (dot product diffuse) shading to a face in an \
-    :obj:`~svg3d.svg3d.Mesh`.
+    :obj:`~.Mesh`.
 
-    This is a convenience function for backwards compatibility, as the full-featured
-    :obj:`~svg3d.shaders.Shader` class should be used in most instances.
+    This is a convenience function for backwards compatibility. The full-featured
+    :obj:`~.Shader` class should be used in most instances.
     """
 
     base_style = base_style if base_style is not None else {}
@@ -84,7 +84,7 @@ def diffuse_lighting(
 
 class Shader:
     """
-    A class to shade :obj:`~svg3d.svg3d.Mesh` objects with Lambertian (dot product \
+    A class to shade :obj:`~.Mesh` objects with Lambertian (dot product \
     diffuse) lighting.
     """
 
@@ -104,7 +104,7 @@ class Shader:
 
     @classmethod
     def from_color(cls, base_color):
-        """Create a :obj:`~svg3d.shaders.Shader` instance with a specified base color.
+        """Create a :obj:`~.Shader` instance with a specified base color.
 
         Parameters
         ----------
@@ -115,7 +115,7 @@ class Shader:
 
     @classmethod
     def from_color_and_direction(cls, base_color, light_direction):
-        """Create a :obj:`~svg3d.shaders.Shader` instance with a specified base color \
+        """Create a :obj:`~.Shader` instance with a specified base color \
         and light direction.
 
         Parameters
@@ -126,13 +126,13 @@ class Shader:
         return cls(base_color=base_color, light_direction=light_direction)
 
     def __call__(self, face_index, mesh, absorbance=0.6):
-        """Compute the shaded style for a face in a :obj:`~svg3d.svg3d.Mesh`.
+        """Compute the shaded style for a face in a :obj:`~.Mesh`.
 
         Parameters
         ----------
         face_index : int
             Index of the face in the mesh.
-        mesh : :obj:`~svg3d.svg3d.Mesh`
+        mesh : :obj:`~.Mesh`
             An svg3d mesh object.
         absorbance: float, optional
             The "absorbance" of the mesh surface, roughly corresponding to the fraction
@@ -163,7 +163,7 @@ class Shader:
 
     @property
     def base_color(self):
-        """dict: Get or set the base color for the :obj:`~svg3d.svg3d.Mesh` from \
+        """dict: Get or set the base color for the :obj:`~.Mesh` from \
         a hexadecimal string."""
         return self._base_color
 
@@ -173,7 +173,7 @@ class Shader:
 
     @property
     def base_style(self):
-        """dict: Get or set style attributes for the :obj:`~svg3d.svg3d.Mesh`."""
+        """dict: Get or set style the attribute dict for the :obj:`~.Mesh`."""
         return self._base_style
 
     @base_style.setter
@@ -183,7 +183,8 @@ class Shader:
     @property
     def diffuse_light_direction(self):
         """
-        ndarray: A 3-element array representing the direction of the light source.
+        :class:`numpy.ndarray`: A 3-element array representing the direction of the \
+        light source.
         """
         return self._diffuse_light_direction
 
