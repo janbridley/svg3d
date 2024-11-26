@@ -1,0 +1,4 @@
+Credits
+=======
+
+.. include:: ../../credits.rst
