@@ -98,7 +98,7 @@ class Mesh:
         cls,
         poly: "coxeter.shapes.ConvexPolyhedron",
         shader: Callable[[int, float], dict] | None = None,
-        style: dict | None =None,
+        style: dict | None = None,
     ):
         """Create a :obj:`~.Mesh` object from a coxeter
         :class:`~coxeter.shapes.ConvexPolyhedron`."""
@@ -114,7 +114,7 @@ class Mesh:
         vertices: np.ndarray[float],
         faces: list[np.ndarray[int]],
         shader: Callable[[int, float], dict] | None = None,
-        style: dict | None =None,
+        style: dict | None = None,
     ):
         return cls(
             faces=[vertices[face] for face in faces],
@@ -260,8 +260,6 @@ class Engine:
         return np.argsort(z_centroids)
 
 
-
-
 def _hex2rgb(hexc):
     hexc = hexc.lstrip("#")
     return np.array([int(hexc[i : i + 2], 16) for i in (0, 2, 4)]) / 255.0
@@ -280,8 +278,6 @@ def _apply_shading(base_color, shading, factor=0.5):
 
     shaded_color = np.clip(shaded_color, 0, 1)  # Ensure RGB values are within [0, 1]
     return _rgb2hex(shaded_color)
-
-
 
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy

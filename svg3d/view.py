@@ -97,17 +97,29 @@ def get_projection_matrix(
 
 
 class Viewport(NamedTuple):
+    """A :obj:`~.Viewport` controls the visible area in a rendered SVG.
+
+    This is a convience wrapper around the svgwrite :obj:`~svgwrite.mixins.Viewbox`
+    classes with a simplified interface.
+    """
+
     minx: float = -0.5
+    """Left border of the viewport."""
     miny: float = -0.5
+    """Right border of the viewport."""
     width: float = 1.0
+    """Width of the viewport."""
     height: float = 1.0
+    """Height of the viewport."""
 
     @classmethod
     def from_aspect(cls, aspect_ratio: float):
+        """Create a :obj:`~.Viewport` with the given aspect ratio."""
         return cls(-aspect_ratio / 2.0, -0.5, aspect_ratio, 1.0)
 
     @classmethod
     def from_string(cls, string_to_parse: str):
+        """Create a :obj:`~.Viewport` from a space-delimited string of floats."""
         args = [float(f) for f in string_to_parse.split()]
         return cls(*args)
 
