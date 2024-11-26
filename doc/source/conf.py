@@ -33,7 +33,7 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable/", None),
     "matplotlib": ("https://matplotlib.org", None),
     "coxeter": ("https://coxeter.readthedocs.io/en/stable", None),
-    "svgwrite": ("https://svgwrite.readthedocs.io/en/latest/", None)
+    "svgwrite": ("https://svgwrite.readthedocs.io/en/latest/", None),
 }
 
 # -- Options for HTML output -------------------------------------------------
@@ -43,7 +43,7 @@ html_theme = "furo"
 html_static_path = ["_static"]
 # html_logo = 'svg3d-logo.svg'
 html_theme_options = {
-    'top_of_page_buttons': ["view", "edit"],
+    "top_of_page_buttons": ["view", "edit"],
     "navigation_with_keys": True,
     "dark_css_variables": {
         "color-brand-primary": "#AFA8B9",
