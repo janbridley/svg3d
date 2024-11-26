@@ -4,6 +4,15 @@ import svg3d
 from svg3d import get_lookat_matrix, get_projection_matrix
 
 
+# The style of our SVG images can be stored in a dictionary object
+style = {
+    "fill": "#71618D",
+    "fill_opacity": "0.85",
+    "stroke": "black",
+    "stroke_linejoin": "round",
+    "stroke_width": "0.005",
+}
+
 def generate_svg(filename, poly):
     pos_object = [0.0, 0.0, 0.0]  # "at" position
     pos_camera = [40, 40, 120]  # "eye" position
@@ -19,10 +28,9 @@ def generate_svg(filename, poly):
     )
 
     # A "scene" is a list of Mesh objects, which can be easily generated from Coxeter!
+    shader = svg3d.shaders.Shader.from_style_dict(style)
     scene = [
-        svg3d.Mesh.from_coxeter(
-            poly, style=style, shader=svg3d.shaders.diffuse_lighting
-        )
+        svg3d.Mesh.from_coxeter(poly, style=style, shader=shader)
     ]
 
     view = svg3d.View.from_look_at_and_projection(
@@ -33,14 +41,6 @@ def generate_svg(filename, poly):
 
     svg3d.Engine([view]).render(filename)
 
-
-style = {
-    "fill": "#71618D",
-    "fill_opacity": "0.85",
-    "stroke": "black",
-    "stroke_linejoin": "round",
-    "stroke_width": "0.005",
-}
 
 truncated_cube = ArchimedeanFamily.get_shape("Truncated Cube")
 generate_svg(filename="doc/svgs/truncated_cube.svg", poly=truncated_cube)
