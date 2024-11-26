@@ -41,6 +41,20 @@ intersphinx_mapping = {
 
 html_theme = "furo"
 html_static_path = ["_static"]
+# html_logo = 'svg3d-logo.svg'
+html_theme_options = {
+    'top_of_page_buttons': ["view", "edit"],
+    "navigation_with_keys": True,
+    "dark_css_variables": {
+        "color-brand-primary": "#AFA8B9",
+        "color-brand-content": "#AFA8B9",
+    },
+    "light_css_variables": {
+        "color-brand-primary": "#4A4453",
+        "color-brand-content": "#4A4453",
+    },
+}
+# html_favicon = 'svg3d-logo-favicon.svg'
 
 
 # Autodoc settings
