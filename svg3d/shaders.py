@@ -80,7 +80,8 @@ def diffuse_lighting(
 
 class Shader:
     """
-    A class to shade :obj:`~svg3d.svg3d.Mesh` objects with Lambertian (dot product diffuse) lighting.
+    A class to shade :obj:`~svg3d.svg3d.Mesh` objects with Lambertian (dot product \
+    diffuse) lighting.
     """
 
     def __init__(self, base_color="#71618D", light_direction=DEFAULT_LIGHT):
@@ -95,7 +96,7 @@ class Shader:
             Default is `[1.0, 1.0, 0.5]`.
         """
         self._base_color = base_color
-        self._light_direction = DEFAULT_LIGHT
+        self._diffuse_light_direction = DEFAULT_LIGHT
 
     @classmethod
     def from_color(cls, base_color):
@@ -107,7 +108,6 @@ class Shader:
             The base color as a hexadecimal string (e.g., `#FFFFFF`).
         """
         return cls(base_color=base_color)
-
 
     @classmethod
     def from_color_and_direction(cls, base_color, light_direction):
@@ -177,21 +177,21 @@ class Shader:
         self._base_style = base_style
 
     @property
-    def light_direction(self):
+    def diffuse_light_direction(self):
         """
         ndarray: A 3-element array representing the direction of the light source.
         """
-        return self._light_direction
+        return self._diffuse_light_direction
 
-    @light_direction.setter
-    def light_direction(self, light_direction: np.ndarray | list[float]):
+    @diffuse_light_direction.setter
+    def diffuse_light_direction(self, light_direction: np.ndarray | list[float]):
         """
         Set the direction of the diffuse light source.
 
         Parameters
         ----------
         light_direction : array or list of float
-            A 3-element iterable specifying the light direction.
+            A 3-element iterable specifying the diffuse light direction.
 
         Raises
         ------
@@ -201,6 +201,4 @@ class Shader:
         msg = "Light direction should be an iterable with length three."
         assert hasattr(light_direction, "__len__") and len(light_direction) == 3, msg
 
-        self._light_direction = np.asarray(light_direction)
-
-
+        self._diffuse_light_direction = np.asarray(light_direction)

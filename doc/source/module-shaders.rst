@@ -6,4 +6,3 @@ svg3d.shaders
    :undoc-members:
    :special-members: __call__
    :show-inheritance:
-  
