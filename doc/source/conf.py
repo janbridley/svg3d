@@ -33,6 +33,7 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable/", None),
     "matplotlib": ("https://matplotlib.org", None),
     "coxeter": ("https://coxeter.readthedocs.io/en/stable", None),
+    "svgwrite": ("https://svgwrite.readthedocs.io/en/latest/", None)
 }
 
 # -- Options for HTML output -------------------------------------------------
