@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 import numpy as np
 
 DEFAULT_LIGHT = np.array([1, 1, 0.5], dtype=float)
@@ -82,11 +84,61 @@ def diffuse_lighting(
     return base_style | {"fill": new_color}
 
 
-class Shader:
+
+class Shader(ABC):
     """
-    A class to shade :obj:`~.Mesh` objects with Lambertian (dot product \
-    diffuse) lighting.
+    Abstract base class for shaders.
     """
+
+    def __init__(self, base_color="#71618D", base_style=None):
+        """Initialize the shader.
+
+        Parameters
+        ----------
+        base_color : str, optional
+            A hexadecimal-formatted color string for the mesh. Default is "#71618D".
+        base_style: dict, optional
+            The style attribute dict for the object.
+        """
+
+        self._base_color = base_color
+        self._base_style = base_style
+
+    @abstractmethod
+    def __call__(self, face_index, mesh, absorbance=0.6):
+        """Compute the shaded style for a face in a mesh.
+
+        Abstract method to be implemented in subclasses.
+        """
+        return {}
+
+    @property
+    def base_style(self):
+        """dict: Get or set the style attribute dict for the object."""
+        return self._base_style
+
+    @base_style.setter
+    def base_style(self, base_style: dict):
+        self._base_style = base_style
+
+class DiffuseShader(Shader):
+    """
+    A class to shade Mesh objects with flat, Lambertian (dot product diffuse) lighting.
+    """
+
+    def __init__(self, base_color="#71618D", light_direction=DEFAULT_LIGHT, base_style=None):
+        """Initialize the diffuse shader.
+
+        Parameters
+        ----------
+        base_color : str, optional
+            A hexadecimal-formatted color string for the mesh. Default is "#71618D".
+        light_direction : iterable of float, optional
+            A 3-element array specifying the direction of the light source.
+            Default is [1.0, 1.0, 0.5].
+        """
+        super().__init__(base_color=base_color, base_style=base_style)
+        self._diffuse_light_direction = np.asarray(light_direction)
 
     def __init__(self, base_color="#71618D", light_direction=DEFAULT_LIGHT):
         """Initialize the shader.
@@ -146,23 +198,22 @@ class Shader:
         return cls(base_color=base_color, light_direction=light_direction)
 
     def __call__(self, face_index, mesh, absorbance=0.6):
-        """Compute the shaded style for a face in a :obj:`~.Mesh`.
+        """Compute the shaded style for a face in a mesh.
 
         Parameters
         ----------
         face_index : int
             Index of the face in the mesh.
-        mesh : :obj:`~.Mesh`
+        mesh : Mesh
             An svg3d mesh object.
-        absorbance: float, optional
-            The "absorbance" of the mesh surface, roughly corresponding to the fraction
-            of input light that is absorbed by the material. Should fall in the range
-            [0.0, 1.0) with larger values equating to darker shading. Default value: 0.6
+        absorbance : float, optional
+            The "absorbance" of the mesh surface. Should fall in the range [0.0, 1.0), \
+            with larger values equating to darker shading. Default is 0.6.
 
         Returns
         -------
         dict
-            A dictionary containing the svg style attributes for the shaded face.
+            A dictionary containing the SVG style attributes for the shaded face.
         """
         base_style = self.base_style if self.base_style is not None else {}
 
@@ -171,45 +222,24 @@ class Shader:
 
         new_color = self._apply_shading(self.base_color, shading, absorbance=absorbance)
 
-        return base_style | {"fill": new_color}
+        return {**base_style, "fill": new_color}
 
     def _apply_shading(self, base_color, shading, absorbance=0.5):
         """Apply shading model to an input color."""
         base_rgb = hex2rgb(base_color)
-        shaded_color = base_rgb + absorbance* shading * (np.ones(3) - base_rgb)
-
+        shaded_color = base_rgb + absorbance * shading * (np.ones(3) - base_rgb)
         shaded_color = np.clip(shaded_color, 0, 1)
         return rgb2hex(shaded_color)
 
     @property
-    def base_color(self):
-        """dict: Get or set the base color for the :obj:`~.Mesh` from \
-        a hexadecimal string."""
-        return self._base_color
-
-    @base_color.setter
-    def base_color(self, base_color):
-        self._base_color = base_color
-
-    @property
-    def base_style(self):
-        """dict: Get or set style the attribute dict for the :obj:`~.Mesh`."""
-        return self._base_style
-
-    @base_style.setter
-    def base_style(self, base_style: dict):
-        self._base_style = base_style
-
-    @property
     def diffuse_light_direction(self):
         """
-        :class:`numpy.ndarray`: A 3-element array representing the direction of the \
-        light source.
+        np.ndarray: A 3-element array representing the direction of the light source.
         """
         return self._diffuse_light_direction
 
     @diffuse_light_direction.setter
-    def diffuse_light_direction(self, light_direction: np.ndarray | list[float]):
+    def diffuse_light_direction(self, light_direction):
         """
         Set the direction of the diffuse light source.
 
@@ -221,9 +251,17 @@ class Shader:
         Raises
         ------
         AssertionError
-            If `light_direction` is not an iterable of length three.
+            If light_direction is not an iterable of length three.
         """
         msg = "Light direction should be an iterable with length three."
         assert hasattr(light_direction, "__len__") and len(light_direction) == 3, msg
-
         self._diffuse_light_direction = np.asarray(light_direction)
+
+    @property
+    def base_color(self):
+        """dict: Get or set the base color for the mesh from a hexadecimal string."""
+        return self._base_color
+
+    @base_color.setter
+    def base_color(self, base_color):
+        self._base_color = base_color
