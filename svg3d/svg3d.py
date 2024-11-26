@@ -41,7 +41,7 @@ class Mesh:
 
     @property
     def faces(self):
-        """~np.ndarray: Get or set the faces of the :obj:`~.Mesh`"""
+        """np.ndarray: Get or set the faces of the :obj:`~.Mesh`"""
         return self._faces
 
     @faces.setter
@@ -51,7 +51,8 @@ class Mesh:
 
     @property
     def shader(self):
-        """Callable: Get or set the :obj:`~.Shader` for the :obj:`~.Mesh`"""
+        """:py:obj:`~typing.Callable`: Get or set the :obj:`~.Shader` for the \
+        :obj:`~.Mesh`"""
         return self._shader
 
     @shader.setter
@@ -138,7 +139,7 @@ class Engine:
 
     @property
     def precision(self):
-        """int: Get or set the rounding precision for vertices of rengered polygons."""
+        """int: Get or set the rounding precision for vertices of rendered polygons."""
         return self._precision
 
     @precision.setter
@@ -146,6 +147,26 @@ class Engine:
         return self._precision
 
     def render(self, filename, size=(512, 512), viewbox="-0.5 -0.5 1.0 1.0", **extra):
+        """
+        Render the current view or views to a file.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to save the render to. Should be postfixed with `.svg`
+        size : tuple of int, optional
+            Size of the render in pixels. Default is (512, 512).
+        viewbox : str, optional
+            :class:`~svgwrite.mixins.viewBox` attribute for the SVG. Default is \
+            "-0.5 -0.5 1.0 1.0".
+        **extra
+            Additional keyword arguments to be passed into :py:mod:`svgwrite`.
+
+        Raises
+        ------
+        RuntimeWarning
+            If all faces are pruned due to incorrect projection matrix.
+        """
         drawing = svgwrite.Drawing(filename, size, viewBox=viewbox, **extra)
         self._draw(drawing)
         drawing.save()
