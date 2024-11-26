@@ -51,11 +51,11 @@ def rgb2hex(rgb):
     return "#{:02x}{:02x}{:02x}".format(*rgb).upper()
 
 
-def _apply_shading(base_color, shading, factor=0.5):
+def _apply_shading(base_color, shading, absorbance=0.5):
     # `shading` is a value between -1 and 1
     # factor controls how much lighter/darker we go from the base color
     base_rgb = hex2rgb(base_color)
-    shaded_color = base_rgb + factor * shading * (np.ones(3) - base_rgb)
+    shaded_color = base_rgb + absorbance * shading * (np.ones(3) - base_rgb)
 
     shaded_color = np.clip(shaded_color, 0, 1)  # Ensure RGB values are within [0, 1]
     return rgb2hex(shaded_color)
@@ -65,7 +65,11 @@ def diffuse_lighting(
     face_index, mesh, light_direction=None, base_style=None, base_color="#71618D"
 ):
     """Apply Lambertian (dot product diffuse) shading to a face in an \
-    :obj:`~svg3d.svg3d.Mesh`."""
+    :obj:`~svg3d.svg3d.Mesh`.
+
+    This is a convenience function for backwards compatibility, as the full-featured
+    :obj:`~svg3d.shaders.Shader` class should be used in most instances.
+    """
 
     base_style = base_style if base_style is not None else {}
     light_direction = light_direction if light_direction is not None else DEFAULT_LIGHT
@@ -73,7 +77,7 @@ def diffuse_lighting(
     normal = mesh.normals[face_index] / np.linalg.norm(mesh.normals[face_index])
     shading = np.dot(normal, light_direction)
 
-    new_color = _apply_shading(base_color, shading, factor=0.6)
+    new_color = _apply_shading(base_color, shading, absorbance=0.6)
 
     return base_style | {"fill": new_color}
 
@@ -121,7 +125,7 @@ class Shader:
         """
         return cls(base_color=base_color, light_direction=light_direction)
 
-    def __call__(self, face_index, mesh, factor=0.6):
+    def __call__(self, face_index, mesh, absorbance=0.6):
         """Compute the shaded style for a face in a :obj:`~svg3d.svg3d.Mesh`.
 
         Parameters
@@ -130,10 +134,10 @@ class Shader:
             Index of the face in the mesh.
         mesh : :obj:`~svg3d.svg3d.Mesh`
             An svg3d mesh object.
-        factor : float, optional
-            A multiplier controlling the intensity of the shading effect. Should fall in
-            the range (0.0, 1.0] with larger values equating to darker shading. Default
-            value: 0.6
+        absorbance: float, optional
+            The "absorbance" of the mesh surface, roughly corresponding to the fraction
+            of input light that is absorbed by the material. Should fall in the range
+            [0.0, 1.0) with larger values equating to darker shading. Default value: 0.6
 
         Returns
         -------
@@ -145,14 +149,14 @@ class Shader:
         normal = mesh.normals[face_index] / np.linalg.norm(mesh.normals[face_index])
         shading = np.dot(normal, self.light_direction)
 
-        new_color = self._apply_shading(self.base_color, shading, factor=factor)
+        new_color = self._apply_shading(self.base_color, shading, absorbance=absorbance)
 
         return base_style | {"fill": new_color}
 
-    def _apply_shading(self, base_color, shading, factor=0.5):
+    def _apply_shading(self, base_color, shading, absorbance=0.5):
         """Apply shading model to an input color."""
         base_rgb = hex2rgb(base_color)
-        shaded_color = base_rgb + factor * shading * (np.ones(3) - base_rgb)
+        shaded_color = base_rgb + absorbance* shading * (np.ones(3) - base_rgb)
 
         shaded_color = np.clip(shaded_color, 0, 1)
         return rgb2hex(shaded_color)
