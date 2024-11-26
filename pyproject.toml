@@ -52,11 +52,11 @@ indent-style = "space"
 
 [tool.pytest.ini_options]
 # Additional command line options for pytest
-addopts = "--doctest-modules -p coxeter.__doctest_fixtures"
+addopts = "--doctest-modules --doctest-continue-on-failure --doctest-glob='*.rst'"
 doctest_optionflags = "NORMALIZE_WHITESPACE ELLIPSIS"
 # Add percentage progress bar to the pytest console output
 console_output_style = "progress"
 # Specify the tests folder to speed up collection.
-testpaths = ["tests"]
+testpaths = ["tests", "svg3d"]
 # Disable hypothesis health checks - these are frustrating at best
 # hypothesis-suppress_health_check = ["filter_too_much"]
