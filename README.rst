@@ -1,26 +1,28 @@
+.. SVG3D
+
 .. container:: row
 
-   .. image:: _static/cube-wireframe.svg
+   .. image:: doc/source/_static/cube-wireframe.svg
       :alt: Cube Wireframe
       :width: 17%
 
-   .. image:: _static/cycle-compact.svg
+   .. image:: doc/source/_static/cycle-compact.svg
       :alt: Alternation Cycle
       :width: 17%
 
-   .. image:: _static/CrumpledDevelopable-tri-compact.svg
+   .. image:: doc/source/_static/CrumpledDevelopable-tri-compact.svg
       :alt: Keenan CrumpledDevelopable
       :width: 17%
 
-   .. image:: _static/oloid_64-tri-compact.svg
+   .. image:: doc/source/_static/oloid_64-tri-compact.svg
       :alt: Keenan Oloid
       :width: 17%
 
-   .. image:: _static/bunny-tri-compact.svg
+   .. image:: doc/source/_static/bunny-tri-compact.svg
       :alt: Stanford Bunny
       :width: 17%
 
-
+.. _imheader:
 
 SVG3D was designed to bridge the gap between raytraced rendering engines like Blender and plotting tools like matplotlib and plotly. Common computer graphics techniques and models have been adapted to work within the counstraints of vector art, an approach that enables users to generate compact, scalable images with realistic shading.
 
@@ -93,7 +95,6 @@ Quickstart Example
      - .. image:: _static/dim.svg
      - .. image:: _static/tri.svg
 
-.. _usage:
 
 Usage Example
 =============
