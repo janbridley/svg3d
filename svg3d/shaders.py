@@ -84,7 +84,6 @@ def diffuse_lighting(
     return base_style | {"fill": new_color}
 
 
-
 class Shader(ABC):
     """
     Abstract base class for shaders.
@@ -121,12 +120,15 @@ class Shader(ABC):
     def base_style(self, base_style: dict):
         self._base_style = base_style
 
+
 class DiffuseShader(Shader):
     """
     Shade Mesh objects with per-face, Lambertian (dot product diffuse) lighting.
     """
 
-    def __init__(self, base_color="#71618D", light_direction=DEFAULT_LIGHT, base_style=None):
+    def __init__(
+        self, base_color="#71618D", light_direction=DEFAULT_LIGHT, base_style=None
+    ):
         """Initialize the diffuse shader.
 
         Parameters
@@ -143,7 +145,7 @@ class DiffuseShader(Shader):
         self._diffuse_light_direction = np.asarray(light_direction)
 
     @classmethod
-    def from_style_dict(cls, style: dict, light_direction = DEFAULT_LIGHT):
+    def from_style_dict(cls, style: dict, light_direction=DEFAULT_LIGHT):
         """Create a :obj:`~.Shader` instance with a style dictionary.
 
         Parameters
@@ -157,7 +159,6 @@ class DiffuseShader(Shader):
         new = cls(base_color=style["fill"], light_direction=light_direction)
         new.base_style = style
         return new
-
 
     @classmethod
     def from_color(cls, base_color):

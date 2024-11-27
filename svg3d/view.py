@@ -1,5 +1,4 @@
-"""Define OpenGL-style views and viewports for scene rendering.
-"""
+"""Define OpenGL-style views and viewports for scene rendering."""
 
 import math
 from typing import NamedTuple
@@ -157,13 +156,13 @@ class View:
         [0, 2, np.sqrt(2), 0],
         [-np.sqrt(3), -1, np.sqrt(2), 0],
         [0, 0, -100 * np.sqrt(6), np.sqrt(6)],
-    ] / np.sqrt(6) # TODO: no-undoc-members, don't want to expose this
+    ] / np.sqrt(6)  # TODO: no-undoc-members, don't want to expose this
 
     @property
     def look_at(self):
         """:math:`(4,4)` :class:`numpy.ndarray`: The openGL-style lookAt matrix.
 
-            .. TODO: add links to openGL docs, explain transpose if required.
+        .. TODO: add links to openGL docs, explain transpose if required.
         """
         return self._look_at
 
@@ -175,7 +174,7 @@ class View:
     def projection(self):
         """:math:`(4,4)` :class:`numpy.ndarray`: The openGL-style projection matrix.
 
-            .. TODO: add links to openGL docs, explain transpose if required.
+        .. TODO: add links to openGL docs, explain transpose if required.
         """
         return self._projection
 
