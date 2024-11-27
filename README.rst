@@ -50,6 +50,7 @@ build from source to install the package.
    # Install to your python environment!
    python -m pip install .
 
+.. _quickstartexample:
 
 Quickstart Example
 ==================
@@ -91,10 +92,11 @@ Quickstart Example
    * - Isometric
      - Dimetric
      - Trimetric
-   * - .. image:: _static/iso.svg
-     - .. image:: _static/dim.svg
-     - .. image:: _static/tri.svg
+   * - .. image:: doc/source/_static/iso.svg
+     - .. image:: doc/source/_static/dim.svg
+     - .. image:: doc/source/_static/tri.svg
 
+.. _usageexample:
 
 Usage Example
 =============
@@ -166,4 +168,4 @@ In addition to convenience methods, `svg3d` allows full control over the viewpor
 
 Running the code above generates the following image:
 
-.. image:: _static/cube-wireframe.svg
+.. image:: doc/source/_static/cube-wireframe.svg

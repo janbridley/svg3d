@@ -23,7 +23,9 @@
 
 .. include:: ../../README.rst
     :start-after: .. _imheader:
-    :end-before: Usage Example
+    :end-before: .. _quickstartexample:
+
+.. include:: quickstart.rst
 
 .. toctree::
    :maxdepth: 2
