@@ -1,13 +1,4 @@
 """Define OpenGL-style views and viewports for scene rendering.
-
-
-Example
--------
-# TODO: fix code blocks
-# Generate an isometric View object
->>> import svg3d
->>> scene = [svg3d.Mesh.example_mesh()]
->>> iso = svg3d.View.isometric(scene)
 """
 
 import math

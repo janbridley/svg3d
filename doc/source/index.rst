@@ -26,5 +26,4 @@
    genindex
    modindex
    development
-   credits
    license

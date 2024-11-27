@@ -59,9 +59,6 @@ The `official documentation <https://svg3d.readthedocs.io/>`_ is generated from 
 
 In addition to API documentation, inline comments are strongly encouraged.
 Code should be written as transparently as possible, so the primary goal of documentation should be explaining the algorithms or mathematical concepts underlying the code.
-Avoid comments that simply restate the nature of lines of code: for example, the comment "set up regex pattern" is uninformative, since the code itself should make this obvious, *e.g*, ``re.compile(r"^(_\w+)\s+(\d+)")``.
-On the other hand, the comment "read an underscore-prefixed word and a numeric value seperated by whitespace" is instructive.
-Multiline comments for regex strings may sometimes be necessary.
 
 Building Documentation
 ^^^^^^^^^^^^^^^^^^^^^^

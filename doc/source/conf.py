@@ -41,8 +41,10 @@ intersphinx_mapping = {
 
 html_theme = "furo"
 html_static_path = ["_static"]
-# html_logo = 'svg3d-logo.svg'
 html_theme_options = {
+    "sidebar_hide_name": True,
+    "light_logo": "svg3d-logo-text.svg",
+    "dark_logo": "svg3d-logo-light.svg",
     "top_of_page_buttons": ["view", "edit"],
     "navigation_with_keys": True,
     "dark_css_variables": {
@@ -54,10 +56,8 @@ html_theme_options = {
         "color-brand-content": "#4A4453",
     },
 }
-# html_favicon = 'svg3d-logo-favicon.svg'
+html_favicon = "svg3d-logo.svg"
 
-
-# Autodoc settings
 autodoc_default_options = {
     "members": True,
     "private-members": False,

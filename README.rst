@@ -20,7 +20,11 @@
       :alt: Stanford Bunny
       :width: 17%
 
-This is a simple Python library for generating 3D wireframes in SVG format, with applications wherever quality vector graphics are desired. A reimagining of the excellent `original library <https://prideout.net/blog/svg_wireframes/#using-the-api>`_ with the same name, this version has a more general interface, new features, and a somewhat different scope. We aim to streamline the process of rendering scenes of geometries for scientific publications, providing vector-specific adaptions of common lighting models and graphical techniques.
+
+
+SVG3D was designed to bridge the gap between raytraced rendering engines like Blender and plotting tools like matplotlib and plotly. Common computer graphics techniques and models have been adapted to work within the counstraints of vector art, an approach that enables users to generate compact, scalable images with realistic shading.
+
+A reimagining of the excellent `original library <https://prideout.net/blog/svg_wireframes/#using-the-api>`_ with the same name, this version has many new features, a more general interface, and a somewhat different scope. We aim to streamline the process of rendering scenes of geometries for scientific publications, although the libary is useful for a diverse array of applications.
 
 Many thanks to the `Keenan 3D Model repository <https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/>`_ and the `Georgia Tech Large Models Archive <https://sites.cc.gatech.edu/projects/large_models/>`_ for the models rendered in the header image.
 
@@ -31,6 +35,9 @@ Many thanks to the `Keenan 3D Model repository <https://www.cs.cmu.edu/~kmcrane/
 
 Installation
 ============
+
+`svg3d` is not yet available via PyPI or Conda Forge. While this is the case, please
+build from source to install the package.
 
 .. code-block:: bash
 
