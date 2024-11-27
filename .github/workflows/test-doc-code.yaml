@@ -1,15 +1,6 @@
 name: Doc Examples
 
 on:
-  # trigger on pull requests
-  pull_request:
-
-  # trigger on all commits to main
-  push:
-    branches:
-      - 'main'
-
-  # trigger on request
   workflow_dispatch:
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
