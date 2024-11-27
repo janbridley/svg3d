@@ -30,8 +30,13 @@ A reimagining of the excellent `original library <https://prideout.net/blog/svg_
 
 Many thanks to the `Keenan 3D Model repository <https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/>`_ and the `Georgia Tech Large Models Archive <https://sites.cc.gatech.edu/projects/large_models/>`_ for the models rendered in the header image.
 
-.. image:: https://github.com/janbridley/svg3d/actions/workflows/run-pytest.yaml/badge.svg
+|CI|
+|ReadTheDocs|
+
+.. |CI| image:: https://github.com/janbridley/svg3d/actions/workflows/run-pytest.yaml/badge.svg
    :target: https://github.com/janbridley/svg3d/actions
+.. |ReadTheDocs| image:: https://readthedocs.org/projects/svg3d/badge/?version=latest
+   :target: http://svg3d.readthedocs.io/en/latest/?badge=latest
 
 .. _installing:
 
