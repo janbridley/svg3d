@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "svg3d"
-version = "0.0.2"
+version = "0.1.0"
 requires-python = ">=3.6"
 description = "Minimal library for rendering polyhedra as SVG wireframes."
 readme = "README.md"
