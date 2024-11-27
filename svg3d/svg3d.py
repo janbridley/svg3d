@@ -8,6 +8,7 @@ This primary package contains object primitives (:obj:`~.Mesh`) and the renderin
 
 
 """
+
 import warnings
 from typing import TYPE_CHECKING, Callable
 
@@ -25,7 +26,7 @@ EXAMPLE_STYLE = {
     "stroke": "black",
     "stroke_linejoin": "round",
     "stroke_width": "0.005",
-} # Sample style dictionary for use in examples.
+}  # Sample style dictionary for use in examples.
 
 
 def _pad_arrays(arrays):
@@ -40,7 +41,7 @@ def _pad_arrays(arrays):
     return np.array(padded_array)
 
 
-class Mesh: # TODO: rename to PolygonMesh, create Object? base class, and add Sphere
+class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add Sphere
     def __init__(
         self,
         faces: list[np.ndarray],
@@ -113,7 +114,7 @@ class Mesh: # TODO: rename to PolygonMesh, create Object? base class, and add Sp
         cls,
         poly: "coxeter.shapes.ConvexPolyhedron",
         shader: Callable[[int, float], dict] | None = None,
-        style: dict | None =None,
+        style: dict | None = None,
     ):
         """Create a :obj:`~.Mesh` object from a coxeter
         :class:`~coxeter.shapes.ConvexPolyhedron`."""
@@ -129,7 +130,7 @@ class Mesh: # TODO: rename to PolygonMesh, create Object? base class, and add Sp
         vertices: np.ndarray[float],
         faces: list[np.ndarray[int]],
         shader: Callable[[int, float], dict] | None = None,
-        style: dict | None =None,
+        style: dict | None = None,
     ):
         return cls(
             faces=[vertices[face] for face in faces],
@@ -159,18 +160,18 @@ class Mesh: # TODO: rename to PolygonMesh, create Object? base class, and add Sp
             [4, 6, 7, 5],
             [0, 1, 3, 2],
             [2, 3, 7, 6],
-            [1, 5, 7, 3]
+            [1, 5, 7, 3],
         ]
 
         return cls(
             faces=[vertices[face] for face in faces],
             shader=DiffuseShader(base_style=EXAMPLE_STYLE),
-            style=EXAMPLE_STYLE
+            style=EXAMPLE_STYLE,
         )
 
 
 class Engine:
-    def __init__(self, views, precision:int=10):
+    def __init__(self, views, precision: int = 10):
         """The engine used to render a scene into an image.
 
 
@@ -335,7 +336,6 @@ class Engine:
         for face_index in range(len(z_centroids)):
             z_centroids[face_index] /= len(faces[face_index])
         return np.argsort(z_centroids)
-
 
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
