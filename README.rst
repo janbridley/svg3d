@@ -85,7 +85,7 @@ Quickstart Example
    for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
        svg3d.Engine([view]).render(f"{view_type}.svg")
 
-.. list-table:: 
+.. list-table::
    :header-rows: 1
 
    * - Isometric
@@ -167,4 +167,3 @@ In addition to convenience methods, `svg3d` allows full control over the viewpor
 Running the code above generates the following image:
 
 .. image:: _static/cube-wireframe.svg
-
