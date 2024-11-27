@@ -2,7 +2,12 @@
 # Copyright (c) 2019 Philip Rideout. Modified 2024 by Jenna Bradley.
 # Distributed under the MIT License, see bottom of file.
 
+"""Three-dimensional vector rendering software in Python.
+This primary package contains object primitives (:obj:`~.Mesh`) and the rendering engine
+:obj:`~.Engine` itself.
 
+
+"""
 import warnings
 from typing import TYPE_CHECKING, Callable
 
@@ -12,6 +17,15 @@ import tqdm
 
 if TYPE_CHECKING:
     import coxeter
+
+EXAMPLE_COLOR = "#71618D"
+EXAMPLE_STYLE = {
+    "fill": EXAMPLE_COLOR,
+    "fill_opacity": "0.85",
+    "stroke": "black",
+    "stroke_linejoin": "round",
+    "stroke_width": "0.005",
+} # Sample style dictionary for use in examples.
 
 
 def _pad_arrays(arrays):
@@ -26,7 +40,7 @@ def _pad_arrays(arrays):
     return np.array(padded_array)
 
 
-class Mesh:
+class Mesh: # TODO: rename to PolygonMesh, create Object? base class, and add Sphere
     def __init__(
         self,
         faces: list[np.ndarray],
@@ -42,15 +56,18 @@ class Mesh:
 
     @property
     def faces(self):
+        """np.ndarray: Get or set the faces of the :obj:`~.Mesh`"""
         return self._faces
 
     @faces.setter
-    def faces(self, faces):
+    def faces(self, faces: list[np.ndarray]):
         self._faces = faces
         self._compute_normals()
 
     @property
     def shader(self):
+        """:py:obj:`~typing.Callable`: Get or set the :obj:`~.Shader` for the \
+        :obj:`~.Mesh`"""
         return self._shader
 
     @shader.setter
@@ -59,6 +76,7 @@ class Mesh:
 
     @property
     def style(self):
+        """dict: Get or set the style dictionary for the mesh."""
         return self._style
 
     @style.setter
@@ -75,6 +93,7 @@ class Mesh:
 
     @property
     def normals(self):
+        """np.ndarray: Get the normals for the faces of the :obj:`~.Mesh`."""
         return self._normals
 
     def _compute_normals(self):
@@ -93,9 +112,11 @@ class Mesh:
     def from_coxeter(
         cls,
         poly: "coxeter.shapes.ConvexPolyhedron",
-        shader=None,
-        style=None,
-    ):  # noqa: F821
+        shader: Callable[[int, float], dict] | None = None,
+        style: dict | None =None,
+    ):
+        """Create a :obj:`~.Mesh` object from a coxeter
+        :class:`~coxeter.shapes.ConvexPolyhedron`."""
         return cls(
             faces=[poly.vertices[face] for face in poly.faces],
             shader=shader,
@@ -107,23 +128,84 @@ class Mesh:
         cls,
         vertices: np.ndarray[float],
         faces: list[np.ndarray[int]],
-        shader=None,
-        style=None,
-    ):  # noqa: F821
+        shader: Callable[[int, float], dict] | None = None,
+        style: dict | None =None,
+    ):
         return cls(
             faces=[vertices[face] for face in faces],
             shader=shader,
             style=style,
         )
 
+    @classmethod
+    def example_mesh(cls):
+        """Generate a mesh from a cube with integer vertices.
+
+        This is an internal method used for tests and examples, and should probably not
+        be instantiated by users.
+
+        :meta private:
+        """
+        # TODO: define default style dict, vertices, and faces
+        from .shaders import DiffuseShader
+
+        # Generate the vertices and faces of a cube
+        partial_vertices = np.tile([-0.5, 0.5], (3, 1))
+        vertices = np.array(np.meshgrid(*partial_vertices)).T.reshape(-1, 3)
+
+        faces = [
+            [0, 2, 6, 4],
+            [0, 4, 5, 1],
+            [4, 6, 7, 5],
+            [0, 1, 3, 2],
+            [2, 3, 7, 6],
+            [1, 5, 7, 3]
+        ]
+
+        return cls(
+            faces=[vertices[face] for face in faces],
+            shader=DiffuseShader(base_style=EXAMPLE_STYLE),
+            style=EXAMPLE_STYLE
+        )
+
 
 class Engine:
-    def __init__(self, views, precision=7):
+    def __init__(self, views, precision:int=10):
+        """The engine used to render a scene into an image.
+
+
+        Example
+        -------
+        > import svg3d
+        > scene = [svg3d.Mesh.example_mesh()]
+        > view = svg3d.View.isometric(scene)
+        > svg3d.Engine([view]).render("example.svg")
+        Wrote file "example.svg"
+
+
+        Parameters
+        ----------
+        views: list[View]
+            List of :obj:`~.View` objects to render. Each is rendered into the same
+            image, allowing for composite graphics from multiple viewpoints. For
+            simplicity, a single :obj:`~.View` object is often best.
+        precision: int
+            Number of decimal places of precision for numeric quantities in the mesh.
+            Smaller values will reduce file sizes but may result in minor
+            inconsistencies in very small geometries. Default value: 10
+        """
         self._views = views
         self._precision = precision
 
     @property
     def views(self):
+        """list[:obj:`~.View`]: Get or set the list of views to render."""
+        if len(self._views) < 1:
+            warnings.warn(
+                "No views available! Rendered image will be blank.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
         return self._views
 
     @views.setter
@@ -132,9 +214,36 @@ class Engine:
 
     @property
     def precision(self):
+        """int: Get or set the rounding precision for vertices of rendered polygons."""
+        return self._precision
+
+    @precision.setter
+    def precision(self, precision):
         return self._precision
 
     def render(self, filename, size=(512, 512), viewbox="-0.5 -0.5 1.0 1.0", **extra):
+        """
+        Render the current view or views to a file.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to save the render to. Should be postfixed with `.svg`
+        size : tuple of int, optional
+            Size of the render in pixels. Default is (512, 512).
+        viewbox : str, optional
+            :class:`~svgwrite.mixins.viewBox` attribute for the SVG. Default is \
+            "-0.5 -0.5 1.0 1.0".
+        **extra
+            Additional keyword arguments to be passed into :py:mod:`svgwrite`.
+
+        Raises
+        ------
+        RuntimeWarning
+            If all faces of a mesh are pruned due to an incorrect projection matrix.
+        RuntimeWarning
+            If :meth:`~.render` is called without any Views to render.
+        """
         drawing = svgwrite.Drawing(filename, size, viewBox=viewbox, **extra)
         self._draw(drawing)
         drawing.save()
@@ -227,44 +336,6 @@ class Engine:
             z_centroids[face_index] /= len(faces[face_index])
         return np.argsort(z_centroids)
 
-
-_directional_light = np.array([2, 2, 1]) / 2
-
-
-def _hex2rgb(hexc):
-    hexc = hexc.lstrip("#")
-    return np.array([int(hexc[i : i + 2], 16) for i in (0, 2, 4)]) / 255.0
-
-
-def _rgb2hex(rgb):
-    rgb = (rgb * 255).astype(int)
-    return "#{:02x}{:02x}{:02x}".format(*rgb).upper()
-
-
-def _apply_shading(base_color, shading, factor=0.5):
-    # `shading` is a value between -1 and 1
-    # factor controls how much lighter/darker we go from the base color
-    base_rgb = _hex2rgb(base_color)
-    shaded_color = base_rgb + factor * shading * (np.ones(3) - base_rgb)
-
-    shaded_color = np.clip(shaded_color, 0, 1)  # Ensure RGB values are within [0, 1]
-    return _rgb2hex(shaded_color)
-
-
-BASE_COLOR = "#71618D"
-base_style = {}
-
-
-def shader(face_index, mesh, base_color="#71618D"):
-    mesh = mesh.faces
-
-    # TODO
-    normal = mesh.normals[face_index] / np.linalg.norm(mesh.normals[face_index])
-    shading = np.dot(normal, _directional_light)
-
-    new_color = _apply_shading(base_color, shading, factor=0.6)
-
-    return base_style | {"fill": new_color}
 
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
