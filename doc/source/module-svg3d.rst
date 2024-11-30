@@ -6,3 +6,4 @@ svg3d
    :special-members: __init__
    :undoc-members:
    :show-inheritance:
+   :inherited-members:
