@@ -15,7 +15,6 @@ TODO: mention raytracing and give side-by-side example
 """
 
 from abc import ABC, abstractmethod
-from copy import deepcopy
 from typing import Callable
 
 import numpy as np
@@ -28,10 +27,11 @@ DEFAULT_LIGHT = np.array([1, 1, 0.5], dtype=float)
 
 There is a ton of flexibility with the "lighting" models - linear gradients should be
 sufficient for standard polygons? And we can transform the gradients with arbitrary
-matrixes so it seems pretty powerful. 
+matrixes so it seems pretty powerful.
 
 Are spheres or gouraud polygons easier?
 """
+
 
 def hex2rgb(hexc):
     """
@@ -149,10 +149,8 @@ class Shader(ABC):
         self._base_style = base_style
 
 
-
 class ShaderPipeline:
-    """Combine multiple shaders into a single callable.
-    """
+    """Combine multiple shaders into a single callable."""
 
     def __init__(self, shaders):
         """Create a :obj:`~.ShaderPipeline` from a list of :obj:`~.Shader` objects.
@@ -190,7 +188,6 @@ class ShaderPipeline:
 
         return style_dict
 
-
     @property
     def shaders(self):
         """list[Callable] : Get or set the list of shaders to compute."""
@@ -199,6 +196,7 @@ class ShaderPipeline:
     @shaders.setter
     def shaders(self, shaders: list[Callable]):
         self._shaders = shaders
+
 
 class CullFacingAway(Shader):
     """Cull faces pointing away from the scene's camera.
@@ -214,14 +212,14 @@ class CullFacingAway(Shader):
 
     :meta-private:
     """
-    def __init__(self, camera_position:np.ndarray, base_style: dict | None=None):
+
+    def __init__(self, camera_position: np.ndarray, base_style: dict | None = None):
         super().__init__(base_style=base_style)
         self._camera_position = camera_position
 
     @property
     def camera_position(self):
-        """:math:`(3,)` :class:`numpy.ndarray`: Get or set the position of the camera.
-        """
+        """:math:`(3,)` :class:`numpy.ndarray`: Get or set the position of the camera."""
         return self._camera_position
 
     @camera_position.setter
@@ -233,7 +231,6 @@ class CullFacingAway(Shader):
         """Compute a :obj:`CullFacingAway` shader from the position of the scene's \
         camera."""
         return cls(camera_position, base_style=base_style)
-
 
     def __call__(self, face_index, mesh):
         r"""Cull faces.
@@ -255,7 +252,6 @@ class CullFacingAway(Shader):
         # This class will be made private for now, in favor of a more complete check.
         raise NotImplementedError
 
-
         if object_position is None:
             if isinstance(mesh, Mesh):
                 object_position = mesh.pointcloud_centroid
@@ -265,9 +261,7 @@ class CullFacingAway(Shader):
                 msg = f"Object position could not be inferred from type {type(mesh)}."
                 raise ValueError(msg)
 
-
     # TODO: add method to generate from a projection matrix
-
 
 
 class DiffuseShader(Shader):
@@ -333,7 +327,6 @@ class DiffuseShader(Shader):
             A 3-element iterable specifying the diffuse light direction.
         """
         return cls(base_color=base_color, light_direction=light_direction)
-
 
     @property
     def absorbance(self):

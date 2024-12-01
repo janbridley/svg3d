@@ -47,7 +47,12 @@ class ObjectPrimitive:
     This class should not be directly instantiated by users, but it can be subclassed to
     allow for the rendering of new primitives.
     """
-    def __init__(self, shader: Callable[[int, float], dict] | None = None, style: dict | None = None):
+
+    def __init__(
+        self,
+        shader: Callable[[int, float], dict] | None = None,
+        style: dict | None = None,
+    ):
         self._shader = shader
         self._style = style
 
@@ -81,6 +86,7 @@ class Sphere(ObjectPrimitive):
         :obj:`Mesh` in scenes with nonspherical geometries.
 
     """
+
     @property
     def radius(self):
         return self._radius
@@ -88,7 +94,6 @@ class Sphere(ObjectPrimitive):
     @radius.setter
     def radius(self, radius):
         self._radius = radius
-
 
     @property
     def centroid(self):
@@ -112,6 +117,7 @@ class Mesh(ObjectPrimitive):
         will not be padded and therefore maintain ideal space efficiency.
 
     """
+
     def __init__(
         self,
         faces: list[np.ndarray],
@@ -159,9 +165,9 @@ class Mesh(ObjectPrimitive):
         """
         # The mesh may contain duplicate points (for vertices shared by faces, or by
         # duplicates of points added when padding). Filter these out before averaging.
-        return np.unique(
-            self.faces.reshape(-1,3).round(self.precision), axis=0
-        ).mean(axis=0)
+        return np.unique(self.faces.reshape(-1, 3).round(self.precision), axis=0).mean(
+            axis=0
+        )
 
     def _compute_normals(self):
         face_simplices = self.faces[:, :3]
