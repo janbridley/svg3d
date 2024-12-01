@@ -1,9 +1,35 @@
+"""Vector-graphic implementations of common lighting models.
+
+TODO: mention raytracing and give side-by-side example
+
+
+.. seealso::
+
+    The SVG standard provides [filter effects](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/filter)
+    that are sufficient to create a wide variety of visual effects. However, small
+    changes in the filter effect can result in unexpectedly large changes in the
+    resulting image due to the limited nature of the SVG specification. Directly
+    controlling the color, shading, and gradient effects on graphics primitives results
+    in quality images with less complexity (and in many cases, fewer bytes).
+
+"""
+
 from abc import ABC, abstractmethod
 
 import numpy as np
 
+from .svg3d import Mesh, Sphere
+
 DEFAULT_LIGHT = np.array([1, 1, 0.5], dtype=float)
 
+""" Notes on gradient lighting models.
+
+There is a ton of flexibility with the "lighting" models - linear gradients should be
+sufficient for standard polygons? And we can transform the gradients with arbitrary
+matrixes so it seems pretty powerful. 
+
+Are spheres or gouraud polygons easier?
+"""
 
 def hex2rgb(hexc):
     """
@@ -119,6 +145,77 @@ class Shader(ABC):
     @base_style.setter
     def base_style(self, base_style: dict):
         self._base_style = base_style
+
+class CullFacingAway(Shader):
+    """Cull faces pointing away from the scene's camera.
+
+    .. note::
+
+        The original svg3d library passed the z-component of mesh normal vectors as the
+        second parameter of every shader callable (`winding_number` in the original code
+        ). This is useful for simple backface culling, but is a mathematical
+        approximation that yields incorrect results in some scenes. This class is a
+        spritual successor to that implementation, taking into account additional
+        information about the view in order to handle more (but not all) edge cases.
+
+    :meta-private:
+    """
+    def __init__(self, camera_position:np.ndarray, base_style: dict | None=None):
+        super().__init__(base_style=base_style)
+        self._camera_position = camera_position
+
+    @property
+    def camera_position(self):
+        """:math:`(3,)` :class:`numpy.ndarray`: Get or set the position of the camera.
+        """
+        return self._camera_position
+
+    @camera_position.setter
+    def camera_position(self, camera_position):
+        self._camera_position = np.asarray(camera_position)
+
+    @classmethod
+    def from_camera_position(cls, camera_position, base_style=None):
+        """Compute a :obj:`CullFacingAway` shader from the position of the scene's \
+        camera."""
+        return cls(camera_position, base_style=base_style)
+
+
+    def __call__(self, face_index, mesh, threshold=0.35, object_position=None):
+        r"""Cull faces.
+
+        Parameters
+        ----------
+        face_index : int
+            Index of the face in the mesh.
+        mesh : Mesh
+            An svg3d Mesh object.
+        threshold: float, optional
+            Default is 0.35.
+
+        Returns
+        -------
+        dict | None
+            A dictionary containing the SVG style attributes for the shaded face.
+        """
+
+        # ISSUE: A "good" approximate implementation of this is very challenging.
+        # This class will be made private for now, in favor of a more complete check.
+        raise NotImplementedError
+
+
+        if object_position is None:
+            if isinstance(mesh, Mesh):
+                object_position = mesh.pointcloud_centroid
+            elif isinstance(mesh, Sphere):
+                raise TypeError("Cannot cull faces from a Sphere primitive!")
+            else:
+                msg = f"Object position could not be inferred from type {type(mesh)}."
+                raise ValueError(msg)
+
+
+    # TODO: add method to generate from a projection matrix
+
 
 
 class DiffuseShader(Shader):
