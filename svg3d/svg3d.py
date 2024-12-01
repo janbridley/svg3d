@@ -41,34 +41,19 @@ def _pad_arrays(arrays):
     return np.array(padded_array)
 
 
-class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add Sphere
-    def __init__(
-        self,
-        faces: list[np.ndarray],
-        shader: Callable[[int, float], dict] | None = None,
-        style: dict | None = None,
-        circle_radius: float = 0.0,
-    ):
-        self._faces = _pad_arrays(faces)
-        self._compute_normals()
+class ObjectPrimitive:
+    """Base class for the geometric primitives that may be rendered.
+
+    This class should not be directly instantiated by users, but it can be subclassed to
+    allow for the rendering of new primitives.
+    """
+    def __init__(self, shader: Callable[[int, float], dict] | None = None, style: dict | None = None):
         self._shader = shader
         self._style = style
-        self._circle_radius = circle_radius
-
-    @property
-    def faces(self):
-        """np.ndarray: Get or set the faces of the :obj:`~.Mesh`"""
-        return self._faces
-
-    @faces.setter
-    def faces(self, faces: list[np.ndarray]):
-        self._faces = faces
-        self._compute_normals()
 
     @property
     def shader(self):
-        """:py:obj:`~typing.Callable`: Get or set the :obj:`~.Shader` for the \
-        :obj:`~.Mesh`"""
+        """:py:obj:`~typing.Callable`: Get or set the :obj:`~.Shader` for the object."""
         return self._shader
 
     @shader.setter
@@ -77,25 +62,106 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
 
     @property
     def style(self):
-        """dict: Get or set the style dictionary for the mesh."""
+        """dict: Get or set the style dictionary for the object."""
         return self._style
 
     @style.setter
-    def style(self, shader):
-        self._shader = shader
+    def style(self, style):
+        self._style = style
+
+
+class Sphere(ObjectPrimitive):
+    """An exact sphere primitive.
+
+    .. warning::
+
+        The base SVG primitive for this shape is a circle - because of this, a
+        :obj:`~.Sphere` without a realistic shader will look flat. It is highly
+        recommended to use the :obj:`~.SphereShader` or a triangulated spherical
+        :obj:`Mesh` in scenes with nonspherical geometries.
+
+    """
+    @property
+    def radius(self):
+        return self._radius
+
+    @radius.setter
+    def radius(self, radius):
+        self._radius = radius
+
 
     @property
-    def circle_radius(self):
-        return self._circle_radius
+    def centroid(self):
+        return self._centroid
 
-    @circle_radius.setter
-    def circle_radius(self, circle_radius):
-        self._circle_radius = circle_radius
+    @centroid.setter
+    def centroid(self, centroid):
+        self._centroid = centroid
+
+
+class Mesh(ObjectPrimitive):
+    """A mesh composed of polygons with variable numbers of vertices.
+
+    .. note::
+
+        This class pads polygonal faces of the mesh up to the maximum :math:`n_{faces}`
+        of the input. Edge effects and polygon fills will always be rendered correctly,
+        but the resulting SVG files will retain the data created in the padding step.
+        This tradeoff allows for much faster render times at the cost of some storage
+        efficiency. Meshes consisting of one face type (typically triangles or squares)
+        will not be padded and therefore maintain ideal space efficiency.
+
+    """
+    def __init__(
+        self,
+        faces: list[np.ndarray],
+        shader: Callable[[int, float], dict] | None = None,
+        style: dict | None = None,
+    ):
+        super().__init__(shader, style)
+        self._faces = _pad_arrays(faces)
+        self._compute_normals()
+
+        self._is_padded = len({len(face) for face in faces}) > 1
+
+    @property
+    def faces(self):
+        """np.ndarray: Get or set the faces of the :obj:`~.PolygonMesh`"""
+        return self._faces
+
+    @faces.setter
+    def faces(self, faces: np.ndarray):
+        self._faces = faces
+        self._compute_normals()
 
     @property
     def normals(self):
-        """np.ndarray: Get the normals for the faces of the :obj:`~.Mesh`."""
+        """np.ndarray: Get the normals for the faces of the :obj:`~.PolygonMesh`."""
         return self._normals
+
+    @property
+    def pointcloud_centroid(self):
+        """Compute the center of mass of the vertices of the mesh.
+
+        .. note::
+
+            The center of mass of the points of a solid is not necessarily the same as
+            the center of mass of the solid. In the first case, we assume only points
+            have volume, and in the second we assume volume is uniformly distributed
+            throughout the space. **This function makes the first assumption**, as it is
+            simple and well-defined for both closed and non-closed geometries.
+
+        Returns
+        -------
+        :math:`(3,)` :class:`numpy.ndarray`:
+            The (point-cloud) center of mass of the :obj:`Mesh`.
+
+        """
+        # The mesh may contain duplicate points (for vertices shared by faces, or by
+        # duplicates of points added when padding). Filter these out before averaging.
+        return np.unique(
+            self.faces.reshape(-1,3).round(self.precision), axis=0
+        ).mean(axis=0)
 
     def _compute_normals(self):
         face_simplices = self.faces[:, :3]
@@ -106,7 +172,6 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
 
         # The LSP is unhappy, but this is correct. Each face has exactly 2 edge vectors
         normals = np.cross(*np.split(face_edge_vectors, 2, axis=1)).squeeze()
-
         self._normals = normals / np.linalg.norm(normals)  # Return normalized
 
     @classmethod
@@ -116,8 +181,7 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
         shader: Callable[[int, float], dict] | None = None,
         style: dict | None = None,
     ):
-        """Create a :obj:`~.Mesh` object from a coxeter
-        :class:`~coxeter.shapes.ConvexPolyhedron`."""
+        """Create a :obj:`~.PolygonMesh` object from a coxeter :class:`~coxeter.shapes.ConvexPolyhedron`."""
         return cls(
             faces=[poly.vertices[face] for face in poly.faces],
             shader=shader,
@@ -140,11 +204,8 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
 
     @classmethod
     def example_mesh(cls):
-        """Generate a mesh from a cube with integer vertices.
-
-        This is an internal method used for tests and examples, and should probably not
-        be instantiated by users.
-
+        """Generate a mesh from a cube with integer vertices. This is an internal method
+        used for tests and examples, and should probably not be instantiated by users.
         :meta private:
         """
         # TODO: define default style dict, vertices, and faces
@@ -171,7 +232,7 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
 
 
 class Engine:
-    def __init__(self, views, precision: int = 10):
+    def __init__(self, views, precision: int = 6):
         """The engine used to render a scene into an image.
 
 
@@ -193,7 +254,7 @@ class Engine:
         precision: int
             Number of decimal places of precision for numeric quantities in the mesh.
             Smaller values will reduce file sizes but may result in minor
-            inconsistencies in very small geometries. Default value: 10
+            inconsistencies in very small geometries. Default value: 6
         """
         self._views = views
         self._precision = precision
@@ -307,14 +368,9 @@ class Engine:
         group = drawing.g(**default_style)
 
         # Create circles.
-        if mesh.circle_radius > 0:
-            for face_index, face in enumerate(faces):
-                style = shader(face_indices[face_index], mesh)
-                if style is None:
-                    continue
-                face = np.around(face[:, :2], self.precision)
-                for pt in face:
-                    group.add(drawing.circle(pt, mesh.circle_radius, **style))
+        if mesh.radius > 0:
+            style = shader(0, mesh)
+            group.add(drawing.circle(mesh.centroid, mesh.radius, **style))
             return group
 
         # Create polygons and lines.
