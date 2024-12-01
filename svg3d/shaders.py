@@ -15,6 +15,8 @@ TODO: mention raytracing and give side-by-side example
 """
 
 from abc import ABC, abstractmethod
+from copy import deepcopy
+from typing import Callable
 
 import numpy as np
 
@@ -146,6 +148,58 @@ class Shader(ABC):
     def base_style(self, base_style: dict):
         self._base_style = base_style
 
+
+
+class ShaderPipeline:
+    """Combine multiple shaders into a single callable.
+    """
+
+    def __init__(self, shaders):
+        """Create a :obj:`~.ShaderPipeline` from a list of :obj:`~.Shader` objects.
+
+        Parameters
+        ----------
+        shaders : list[Shader]
+            List of callables matching the :obj:`~.Shader` function signature.
+
+        """
+        self._shaders = shaders
+
+    def __call__(self, face_index, mesh):
+        """Call each shader in the mesh, updating the style on each step.
+
+
+        Shaders in the pipeline are called in order, with the output style dictionary
+        being updated and passed into the next shader on each step.
+
+        Parameters
+        ----------
+        face_index : int
+            Index of the face in the mesh.
+        mesh : Mesh
+            An svg3d Mesh object.
+        """
+        style_dict = self.shaders[0].base_style
+        for shader in self.shaders:
+            # Temporarily use a new base_style, then reset after processing
+            previous_style = {**shader.base_style}
+
+            shader.base_style = style_dict
+            style_dict = shader(face_index, mesh)
+            shader.base_style = previous_style
+
+        return style_dict
+
+
+    @property
+    def shaders(self):
+        """list[Callable] : Get or set the list of shaders to compute."""
+        return self._shaders
+
+    @shaders.setter
+    def shaders(self, shaders: list[Callable]):
+        self._shaders = shaders
+
 class CullFacingAway(Shader):
     """Cull faces pointing away from the scene's camera.
 
@@ -181,7 +235,7 @@ class CullFacingAway(Shader):
         return cls(camera_position, base_style=base_style)
 
 
-    def __call__(self, face_index, mesh, threshold=0.35, object_position=None):
+    def __call__(self, face_index, mesh):
         r"""Cull faces.
 
         Parameters
@@ -190,8 +244,6 @@ class CullFacingAway(Shader):
             Index of the face in the mesh.
         mesh : Mesh
             An svg3d Mesh object.
-        threshold: float, optional
-            Default is 0.35.
 
         Returns
         -------
@@ -282,7 +334,21 @@ class DiffuseShader(Shader):
         """
         return cls(base_color=base_color, light_direction=light_direction)
 
-    def __call__(self, face_index, mesh, absorbance=0.6):
+
+    @property
+    def absorbance(self):
+        """float: Get or set the absorbance of the mesh surface.
+
+        Should fall in the range [0.0, 1.0). Larger values equate to more light being
+        absorbed by the surface and a darker shader overall. Default is 0.6.
+        """
+        return self._absorbance
+
+    @absorbance.setter
+    def absorbance(self, absorbance: float):
+        self._absorbance = absorbance
+
+    def __call__(self, face_index, mesh):
         """Compute the shaded style for a face in a mesh.
 
         Parameters
@@ -291,9 +357,6 @@ class DiffuseShader(Shader):
             Index of the face in the mesh.
         mesh : Mesh
             An svg3d mesh object.
-        absorbance : float, optional
-            The "absorbance" of the mesh surface. Should fall in the range [0.0, 1.0), \
-            with larger values equating to darker shading. Default is 0.6.
 
         Returns
         -------
@@ -305,7 +368,9 @@ class DiffuseShader(Shader):
         normal = mesh.normals[face_index] / np.linalg.norm(mesh.normals[face_index])
         shading = np.dot(normal, self.diffuse_light_direction)
 
-        new_color = self._apply_shading(self.base_color, shading, absorbance=absorbance)
+        new_color = self._apply_shading(
+            self.base_color, shading, absorbance=self.absorbance
+        )
 
         return {**base_style, "fill": new_color}
 
