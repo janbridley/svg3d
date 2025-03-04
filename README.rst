@@ -2,23 +2,23 @@
 
 .. container:: row
 
-   .. image:: doc/source/_static/cube-wireframe.svg
+   .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/cube-wireframe.svg
       :alt: Cube Wireframe
       :width: 17%
 
-   .. image:: doc/source/_static/cycle-compact.svg
+   .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/cycle-compact.svg
       :alt: Alternation Cycle
       :width: 17%
 
-   .. image:: doc/source/_static/CrumpledDevelopable-tri-compact.svg
+   .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/CrumpledDevelopable-tri-compact.svg
       :alt: Keenan CrumpledDevelopable
       :width: 17%
 
-   .. image:: doc/source/_static/oloid_64-tri-compact.svg
+   .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/oloid_64-tri-compact.svg
       :alt: Keenan Oloid
       :width: 17%
 
-   .. image:: doc/source/_static/bunny-tri-compact.svg
+   .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/bunny-tri-compact.svg
       :alt: Stanford Bunny
       :width: 17%
 
@@ -43,8 +43,14 @@ Many thanks to the `Keenan 3D Model repository <https://www.cs.cmu.edu/~kmcrane/
 Installation
 ============
 
-`svg3d` is not yet available via PyPI or Conda Forge. While this is the case, please
-build from source to install the package.
+`svg3d` is available on PyPI, and can be easily installed from there:
+
+.. code-block:: bash
+
+   pip install svg3d
+
+
+The package can also be built from source:
 
 .. code-block:: bash
 
@@ -97,9 +103,9 @@ Quickstart Example
    * - Isometric
      - Dimetric
      - Trimetric
-   * - .. image:: doc/source/_static/iso.svg
-     - .. image:: doc/source/_static/dim.svg
-     - .. image:: doc/source/_static/tri.svg
+   * - .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/iso.svg
+     - .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/dim.svg
+     - .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/tri.svg
 
 .. _usageexample:
 
@@ -173,4 +179,4 @@ In addition to convenience methods, `svg3d` allows full control over the viewpor
 
 Running the code above generates the following image:
 
-.. image:: doc/source/_static/cube-wireframe.svg
+.. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/cube-wireframe.svg

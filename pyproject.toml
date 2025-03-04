@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "svg3d"
-version = "0.1.0"
-requires-python = ">=3.6"
+version = "0.1.2"
+requires-python = ">=3.10"
 description = "Minimal library for rendering polyhedra as SVG wireframes."
-readme = "README.md"
+readme = "README.rst"
 license = { file = "LICENSE" }
 authors = [
     {name = "Jen Bradley", email = "jenbrad@umich.edu"},
