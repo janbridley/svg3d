@@ -3,6 +3,12 @@
 The format is based on `Keep a Changelog <http://keepachangelog.com/en/1.0.0/>`__.
 This project adheres to `Semantic Versioning <http://semver.org/spec/v2.0.0.html>`__.
 
+## v0.1.2
+
+### Fixed
+
+- Image links in README.rst
+
 ## v0.1.1
 
 ### Added
