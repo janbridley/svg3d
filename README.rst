@@ -43,8 +43,14 @@ Many thanks to the `Keenan 3D Model repository <https://www.cs.cmu.edu/~kmcrane/
 Installation
 ============
 
-`svg3d` is not yet available via PyPI or Conda Forge. While this is the case, please
-build from source to install the package.
+`svg3d` is available on PyPI, and can be easily installed from there:
+
+.. code-block:: bash
+
+   pip install svg3d
+
+
+The package can also be built from source:
 
 .. code-block:: bash
 
