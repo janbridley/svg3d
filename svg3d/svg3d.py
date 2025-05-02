@@ -10,7 +10,8 @@ This primary package contains object primitives (:obj:`~.Mesh`) and the renderin
 """
 
 import warnings
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 import numpy as np
 import svgwrite
