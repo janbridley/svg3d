@@ -15,7 +15,7 @@ TODO: mention raytracing and give side-by-side example
 """
 
 from abc import ABC, abstractmethod
-from typing import Callable
+from collections.abc import Callable
 
 import numpy as np
 
