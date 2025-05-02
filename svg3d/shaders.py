@@ -285,6 +285,7 @@ class DiffuseShader(Shader):
             The style dict for the :obj:`~.Shader`.
         """
         super().__init__(base_color=base_color, base_style=base_style)
+        self._absorbance = 0.50
         self._diffuse_light_direction = np.asarray(light_direction)
 
     @classmethod

@@ -390,7 +390,7 @@ class Engine:
         group = drawing.g(**default_style)
 
         # Create circles.
-        if mesh.radius > 0:
+        if hasattr(mesh, "radius") and mesh.radius > 0:
             style = shader(0, mesh)
             group.add(drawing.circle(mesh.centroid, mesh.radius, **style))
             return group
