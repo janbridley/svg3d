@@ -210,7 +210,7 @@ class Mesh(ObjectPrimitive):
         )
 
     @classmethod
-    def example_mesh(cls):
+    def example_mesh(cls, triangulated=False):
         """Generate a mesh from a cube with integer vertices. This is an internal method
         used for tests and examples, and should probably not be instantiated by users.
         :meta private:
@@ -230,7 +230,22 @@ class Mesh(ObjectPrimitive):
             [2, 3, 7, 6],
             [1, 5, 7, 3],
         ]
+        triangulated_faces = [
+            [0, 2, 6],
+            [4, 0, 6],
+            [5, 0, 4],
+            [5, 1, 0],
+            [4, 6, 5],
+            [5, 6, 7],
+            [0, 3, 2],
+            [3, 0, 1],
+            [2, 3, 6],
+            [6, 3, 7],
+            [3, 1, 5],
+            [5, 7, 3],
+        ]
 
+        faces = faces if not triangulated else triangulated_faces
         return cls(
             faces=[vertices[face] for face in faces],
             shader=DiffuseShader(base_style=EXAMPLE_STYLE),
