@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from .svg3d import Mesh
+from svg3d.svg3d import Mesh
 
 DEFAULT_LIGHT = np.array([1, 1, 0.5], dtype=float)
 
@@ -121,7 +121,7 @@ class Shader(ABC):
 
 
 class UniformShader(Shader):
-    """Shade all faces of a `~.Mesh` with a single, uniform color.
+    """Shade all faces of a :obj:`~.Mesh` with a single, uniform color.
 
     This shader is useful in figure generation and when simplicity and clarity are
     maximally important.
@@ -145,7 +145,7 @@ class UniformShader(Shader):
 
 class DiffuseShader(Shader):
     """
-    Shade Mesh objects with per-face, Lambertian (dot product diffuse) lighting.
+    Shade :obj:`~.Mesh` objects with Lambertian (dot product diffuse) lighting.
     """
 
     def __init__(self, base_style, light_direction=DEFAULT_LIGHT, absorbance=0.6):
