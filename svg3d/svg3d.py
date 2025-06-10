@@ -47,13 +47,11 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
         self,
         faces: list[np.ndarray],
         shader: Callable[[int, float], dict] | None = None,
-        style: dict | None = None,
         circle_radius: float = 0.0,
     ):
         self._faces = _pad_arrays(faces)
         self._compute_normals()
         self._shader = shader
-        self._style = style
         self._circle_radius = circle_radius
 
     @property
@@ -74,15 +72,6 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
 
     @shader.setter
     def shader(self, shader):
-        self._shader = shader
-
-    @property
-    def style(self):
-        """dict: Get or set the style dictionary for the mesh."""
-        return self._style
-
-    @style.setter
-    def style(self, shader):
         self._shader = shader
 
     @property
@@ -115,14 +104,12 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
         cls,
         poly: "coxeter.shapes.ConvexPolyhedron",
         shader: Callable[[int, float], dict] | None = None,
-        style: dict | None = None,
     ):
         """Create a :obj:`~.Mesh` object from a coxeter
         :class:`~coxeter.shapes.ConvexPolyhedron`."""
         return cls(
             faces=[poly.vertices[face] for face in poly.faces],
             shader=shader,
-            style=style,
         )
 
     @classmethod
@@ -131,12 +118,10 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
         vertices: np.ndarray[float],
         faces: list[np.ndarray[int]],
         shader: Callable[[int, float], dict] | None = None,
-        style: dict | None = None,
     ):
         return cls(
             faces=[vertices[face] for face in faces],
             shader=shader,
-            style=style,
         )
 
     @classmethod
@@ -167,7 +152,6 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
         return cls(
             faces=[vertices[face] for face in faces],
             shader=DiffuseShader(base_style=EXAMPLE_STYLE),
-            style=EXAMPLE_STYLE,
         )
 
 
@@ -268,7 +252,7 @@ class Engine:
     def _create_group(self, drawing, projection, viewport, mesh):
         faces = mesh.faces
         shader = mesh.shader or (lambda face_index, mesh: {})
-        default_style = mesh.style or {}
+        default_style = {}
 
         # Extend each point to a vec4, then transform to clip space.
         faces = np.dstack([faces, np.ones(faces.shape[:2])])

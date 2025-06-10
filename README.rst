@@ -85,7 +85,9 @@ Quickstart Example
 
    scene = [
        svg3d.Mesh.from_coxeter(
-           truncated_cube, style=style, shader=svg3d.shaders.diffuse_lighting
+           truncated_cube,
+           style=style,
+           shader=svg3d.shaders.DiffuseShader.from_style_dict(style)
        )
    ]
 
@@ -166,7 +168,7 @@ In addition to convenience methods, `svg3d` allows full control over the viewpor
 
    # A "scene" is a list of Mesh objects, which can be easily generated from raw data
    scene = [
-       svg3d.Mesh.from_vertices_and_faces(vertices, faces, style=style, shader=empty_shader)
+       svg3d.Mesh.from_vertices_and_faces(vertices, faces, shader=empty_shader)
    ]
 
    view = svg3d.View.from_look_at_and_projection(
