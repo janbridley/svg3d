@@ -11,11 +11,10 @@ This primary package contains object primitives (:obj:`~.Mesh`) and the renderin
 
 import warnings
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 import numpy as np
 import svgwrite
-import tqdm
 
 if TYPE_CHECKING:
     import coxeter
@@ -46,7 +45,7 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
     def __init__(
         self,
         faces: list[np.ndarray],
-        shader: Callable[[int, float], dict] | None = None,
+        shader: Callable[[int, Self], dict] | None = None,
         circle_radius: float = 0.0,
     ):
         self._faces = _pad_arrays(faces)
@@ -103,7 +102,7 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
     def from_coxeter(
         cls,
         poly: "coxeter.shapes.ConvexPolyhedron",
-        shader: Callable[[int, float], dict] | None = None,
+        shader: Callable[[int, Self], dict] | None = None,
     ):
         """Create a :obj:`~.Mesh` object from a coxeter
         :class:`~coxeter.shapes.ConvexPolyhedron`."""
@@ -117,7 +116,7 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
         cls,
         vertices: np.ndarray[float],
         faces: list[np.ndarray[int]],
-        shader: Callable[[int, float], dict] | None = None,
+        shader: Callable[[int, Self], dict] | None = None,
     ):
         return cls(
             faces=[vertices[face] for face in faces],
@@ -303,7 +302,7 @@ class Engine:
             return group
 
         # Create polygons and lines.
-        for face_index, face in enumerate(tqdm.tqdm(faces)):
+        for face_index, face in enumerate(faces):
             style = shader(face_indices[face_index], mesh)
             if style is None:
                 continue

@@ -1,6 +1,7 @@
 """Define OpenGL-style views and viewports for scene rendering."""
 
 import math
+from collections.abc import Iterable
 from typing import NamedTuple
 
 import numpy as np
@@ -205,7 +206,7 @@ class View:
         cls,
         look_at: np.ndarray,
         projection: np.ndarray,
-        scene: tuple[Mesh],
+        scene: Iterable[Mesh],
     ):
         """Create a new :obj:`~.View` from a lookAt and projection matrix.
 
