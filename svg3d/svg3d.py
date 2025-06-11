@@ -11,16 +11,13 @@ This primary package contains object primitives (:obj:`~.Mesh`) and the renderin
 
 import warnings
 from collections.abc import Callable
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Self
 
 import numpy as np
 import svgwrite
 
 if TYPE_CHECKING:
     import coxeter
-
-Self = TypeVar("Self", bound="Mesh")
-
 
 EXAMPLE_COLOR = "#71618D"
 EXAMPLE_STYLE = {
