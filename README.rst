@@ -86,7 +86,6 @@ Quickstart Example
    scene = [
        svg3d.Mesh.from_coxeter(
            truncated_cube,
-           style=style,
            shader=svg3d.shaders.DiffuseShader.from_style_dict(style)
        )
    ]
