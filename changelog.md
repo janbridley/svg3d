@@ -5,13 +5,17 @@ This project adheres to `Semantic Versioning <http://semver.org/spec/v2.0.0.html
 
 ## v0.X.X
 
-### Changed
-
-- `Mesh` objects no longer take a style dict, and instead rely on a `Shader` for color.
-
 ### Added
 
-- `UniformShader` object, which applies a flat uniform color to all faces.
+- `UniformShader` object, which applies a flat uniform color to all faces
+
+### Changed
+
+- `Mesh` objects no longer take a style dict, and instead rely on a `Shader` for color
+
+### Removed
+
+- Support for Python 3.10
 
 ## v0.1.2
 
