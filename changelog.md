@@ -3,7 +3,7 @@
 The format is based on `Keep a Changelog <http://keepachangelog.com/en/1.0.0/>`__.
 This project adheres to `Semantic Versioning <http://semver.org/spec/v2.0.0.html>`__.
 
-## v0.X.X
+## v0.2.0
 
 ### Added
 
