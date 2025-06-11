@@ -29,7 +29,7 @@ def generate_svg(filename, poly):
 
     # A "scene" is a list of Mesh objects, which can be easily generated from Coxeter!
     shader = svg3d.shaders.DiffuseShader.from_style_dict(style)
-    scene = [svg3d.Mesh.from_coxeter(poly, style=style, shader=shader)]
+    scene = [svg3d.Mesh.from_coxeter(poly, shader=shader)]
 
     view = svg3d.View.from_look_at_and_projection(
         look_at=look_at,
