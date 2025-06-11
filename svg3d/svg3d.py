@@ -155,7 +155,7 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
 
 
 class Engine:
-    def __init__(self, views, precision: int = 10):
+    def __init__(self, views, precision: int = 14):
         """The engine used to render a scene into an image.
 
 
@@ -177,7 +177,7 @@ class Engine:
         precision: int
             Number of decimal places of precision for numeric quantities in the mesh.
             Smaller values will reduce file sizes but may result in minor
-            inconsistencies in very small geometries. Default value: 10
+            inconsistencies in very small geometries. Default value: 14
         """
         self._views = views
         self._precision = precision
@@ -204,7 +204,7 @@ class Engine:
 
     @precision.setter
     def precision(self, precision):
-        return self._precision
+        self._precision = precision
 
     def render(self, filename, size=(512, 512), viewbox="-0.5 -0.5 1.0 1.0", **extra):
         """
@@ -296,7 +296,7 @@ class Engine:
                 style = shader(face_indices[face_index], mesh)
                 if style is None:
                     continue
-                face = np.around(face[:, :2], self.precision)
+                face = face[:, :2].round(self.precision)
                 for pt in face:
                     group.add(drawing.circle(pt, mesh.circle_radius, **style))
             return group
@@ -316,9 +316,14 @@ class Engine:
         return group
 
     def _sort_back_to_front(self, faces):
-        z_centroids = -np.sum(faces[:, :, 2], axis=1)
-        for face_index in range(len(z_centroids)):
-            z_centroids[face_index] /= len(faces[face_index])
+        from coxeter.shapes import ConvexPolygon
+
+        # {print(face) for face in faces}
+        z_centroids = [
+            -ConvexPolygon(np.unique(face, axis=0)).centroid[-1] for face in faces
+        ]
+        # z_centroids = -np.sum(faces[:, :, 2], axis=1)
+        # print(z_centroids)
         return np.argsort(z_centroids)
 
 
