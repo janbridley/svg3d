@@ -11,11 +11,10 @@ This primary package contains object primitives (:obj:`~.Mesh`) and the renderin
 
 import warnings
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 import numpy as np
 import svgwrite
-import tqdm
 
 if TYPE_CHECKING:
     import coxeter
@@ -46,14 +45,12 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
     def __init__(
         self,
         faces: list[np.ndarray],
-        shader: Callable[[int, float], dict] | None = None,
-        style: dict | None = None,
+        shader: Callable[[int, Self], dict] | None = None,
         circle_radius: float = 0.0,
     ):
         self._faces = _pad_arrays(faces)
         self._compute_normals()
         self._shader = shader
-        self._style = style
         self._circle_radius = circle_radius
 
     @property
@@ -74,15 +71,6 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
 
     @shader.setter
     def shader(self, shader):
-        self._shader = shader
-
-    @property
-    def style(self):
-        """dict: Get or set the style dictionary for the mesh."""
-        return self._style
-
-    @style.setter
-    def style(self, shader):
         self._shader = shader
 
     @property
@@ -114,15 +102,13 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
     def from_coxeter(
         cls,
         poly: "coxeter.shapes.ConvexPolyhedron",
-        shader: Callable[[int, float], dict] | None = None,
-        style: dict | None = None,
+        shader: Callable[[int, Self], dict] | None = None,
     ):
         """Create a :obj:`~.Mesh` object from a coxeter
         :class:`~coxeter.shapes.ConvexPolyhedron`."""
         return cls(
             faces=[poly.vertices[face] for face in poly.faces],
             shader=shader,
-            style=style,
         )
 
     @classmethod
@@ -130,13 +116,11 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
         cls,
         vertices: np.ndarray[float],
         faces: list[np.ndarray[int]],
-        shader: Callable[[int, float], dict] | None = None,
-        style: dict | None = None,
+        shader: Callable[[int, Self], dict] | None = None,
     ):
         return cls(
             faces=[vertices[face] for face in faces],
             shader=shader,
-            style=style,
         )
 
     @classmethod
@@ -167,12 +151,11 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
         return cls(
             faces=[vertices[face] for face in faces],
             shader=DiffuseShader(base_style=EXAMPLE_STYLE),
-            style=EXAMPLE_STYLE,
         )
 
 
 class Engine:
-    def __init__(self, views, precision: int = 10):
+    def __init__(self, views, precision: int = 14):
         """The engine used to render a scene into an image.
 
 
@@ -194,7 +177,7 @@ class Engine:
         precision: int
             Number of decimal places of precision for numeric quantities in the mesh.
             Smaller values will reduce file sizes but may result in minor
-            inconsistencies in very small geometries. Default value: 10
+            inconsistencies in very small geometries. Default value: 14
         """
         self._views = views
         self._precision = precision
@@ -221,7 +204,7 @@ class Engine:
 
     @precision.setter
     def precision(self, precision):
-        return self._precision
+        self._precision = precision
 
     def render(self, filename, size=(512, 512), viewbox="-0.5 -0.5 1.0 1.0", **extra):
         """
@@ -268,7 +251,7 @@ class Engine:
     def _create_group(self, drawing, projection, viewport, mesh):
         faces = mesh.faces
         shader = mesh.shader or (lambda face_index, mesh: {})
-        default_style = mesh.style or {}
+        default_style = {}
 
         # Extend each point to a vec4, then transform to clip space.
         faces = np.dstack([faces, np.ones(faces.shape[:2])])
@@ -313,13 +296,13 @@ class Engine:
                 style = shader(face_indices[face_index], mesh)
                 if style is None:
                     continue
-                face = np.around(face[:, :2], self.precision)
+                face = face[:, :2].round(self.precision)
                 for pt in face:
                     group.add(drawing.circle(pt, mesh.circle_radius, **style))
             return group
 
         # Create polygons and lines.
-        for face_index, face in enumerate(tqdm.tqdm(faces)):
+        for face_index, face in enumerate(faces):
             style = shader(face_indices[face_index], mesh)
             if style is None:
                 continue
@@ -334,8 +317,6 @@ class Engine:
 
     def _sort_back_to_front(self, faces):
         z_centroids = -np.sum(faces[:, :, 2], axis=1)
-        for face_index in range(len(z_centroids)):
-            z_centroids[face_index] /= len(faces[face_index])
         return np.argsort(z_centroids)
 
 

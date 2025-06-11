@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
+from svg3d.svg3d import Mesh
+
 DEFAULT_LIGHT = np.array([1, 1, 0.5], dtype=float)
 
 
@@ -89,22 +91,19 @@ class Shader(ABC):
     Abstract base class for shaders.
     """
 
-    def __init__(self, base_color="#71618D", base_style=None):
+    def __init__(self, base_style=None):
         """Initialize the shader.
 
         Parameters
         ----------
-        base_color : str, optional
-            A hexadecimal-formatted color string for the mesh. Default is "#71618D".
         base_style: dict | None, optional
             The style attribute dict for the :obj:`~.Shader`.
         """
 
-        self._base_color = base_color
         self._base_style = base_style
 
     @abstractmethod
-    def __call__(self, face_index, mesh, absorbance=0.6):
+    def __call__(self, face_index: int, mesh: Mesh) -> dict:
         """Compute the shaded style for a face in a mesh.
 
         Abstract method to be implemented in subclasses.
@@ -121,14 +120,35 @@ class Shader(ABC):
         self._base_style = base_style
 
 
-class DiffuseShader(Shader):
-    """
-    Shade Mesh objects with per-face, Lambertian (dot product diffuse) lighting.
+class UniformShader(Shader):
+    """Shade all faces of a :obj:`~.Mesh` with a single, uniform color.
+
+    This shader is useful in figure generation and when simplicity and clarity are
+    maximally important.
     """
 
-    def __init__(
-        self, base_color="#71618D", light_direction=DEFAULT_LIGHT, base_style=None
-    ):
+    def __init__(self, base_style=None):
+        """Initialize the diffuse shader.
+
+        Parameters
+        ----------
+        base_style : dict | None, optional
+            The style dict for the :obj:`~.Shader`.
+        """
+        super().__init__(base_style=base_style)
+
+    def __call__(self, face_index: int, mesh: Mesh) -> dict:
+        """Render face index `i` in a `mesh` based on the shader's style dict."""
+        base_style = self.base_style if self.base_style is not None else {}
+        return base_style
+
+
+class DiffuseShader(Shader):
+    """
+    Shade :obj:`~.Mesh` objects with Lambertian (dot product diffuse) lighting.
+    """
+
+    def __init__(self, base_style, light_direction=DEFAULT_LIGHT, absorbance=0.6):
         """Initialize the diffuse shader.
 
         Parameters
@@ -141,7 +161,8 @@ class DiffuseShader(Shader):
         base_style : dict | None, optional
             The style dict for the :obj:`~.Shader`.
         """
-        super().__init__(base_color=base_color, base_style=base_style)
+        super().__init__(base_style=base_style)
+        self.absorbance = absorbance
         self._diffuse_light_direction = np.asarray(light_direction)
 
     @classmethod
@@ -156,9 +177,7 @@ class DiffuseShader(Shader):
             A 3-element iterable specifying the diffuse light direction. Default \
             value: (1.0, 1.0, 0.5)
         """
-        new = cls(base_color=style["fill"], light_direction=light_direction)
-        new.base_style = style
-        return new
+        return cls(base_style=style, light_direction=light_direction)
 
     @classmethod
     def from_color(cls, base_color):
@@ -169,7 +188,7 @@ class DiffuseShader(Shader):
         base_color : str
             The base color as a hexadecimal string (e.g., `#FFFFFF`).
         """
-        return cls(base_color=base_color)
+        return cls(base_style={"fill": base_color})
 
     @classmethod
     def from_color_and_direction(cls, base_color, light_direction):
@@ -183,9 +202,9 @@ class DiffuseShader(Shader):
         light_direction : array or list of float
             A 3-element iterable specifying the diffuse light direction.
         """
-        return cls(base_color=base_color, light_direction=light_direction)
+        return cls(base_style={"fill": base_color}, light_direction=light_direction)
 
-    def __call__(self, face_index, mesh, absorbance=0.6):
+    def __call__(self, face_index: int, mesh: Mesh) -> dict:
         """Compute the shaded style for a face in a mesh.
 
         Parameters
@@ -208,7 +227,9 @@ class DiffuseShader(Shader):
         normal = mesh.normals[face_index] / np.linalg.norm(mesh.normals[face_index])
         shading = np.dot(normal, self.diffuse_light_direction)
 
-        new_color = self._apply_shading(self.base_color, shading, absorbance=absorbance)
+        new_color = self._apply_shading(
+            self.base_style.get("fill", "#FFFFFF"), shading, absorbance=self.absorbance
+        )
 
         return {**base_style, "fill": new_color}
 

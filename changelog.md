@@ -3,6 +3,20 @@
 The format is based on `Keep a Changelog <http://keepachangelog.com/en/1.0.0/>`__.
 This project adheres to `Semantic Versioning <http://semver.org/spec/v2.0.0.html>`__.
 
+## v0.X.X
+
+### Added
+
+- `UniformShader` object, which applies a flat uniform color to all faces
+
+### Changed
+
+- `Mesh` objects no longer take a style dict, and instead rely on a `Shader` for color
+
+### Removed
+
+- Support for Python 3.10
+
 ## v0.1.2
 
 ### Fixed
