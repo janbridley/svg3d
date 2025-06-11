@@ -316,14 +316,7 @@ class Engine:
         return group
 
     def _sort_back_to_front(self, faces):
-        from coxeter.shapes import ConvexPolygon
-
-        # {print(face) for face in faces}
-        z_centroids = [
-            -ConvexPolygon(np.unique(face, axis=0)).centroid[-1] for face in faces
-        ]
-        # z_centroids = -np.sum(faces[:, :, 2], axis=1)
-        # print(z_centroids)
+        z_centroids = -np.sum(faces[:, :, 2], axis=1)
         return np.argsort(z_centroids)
 
 
