@@ -34,6 +34,7 @@
    installation
    quickstart
    usage-example
+   custom-shaders
 
 
 .. toctree::
