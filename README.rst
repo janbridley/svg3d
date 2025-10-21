@@ -181,3 +181,86 @@ In addition to convenience methods, `svg3d` allows full control over the viewpor
 Running the code above generates the following image:
 
 .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/cube-wireframe.svg
+
+
+.. _customshader:
+
+Custom Shaders
+==============
+
+The `svg3d` shader API is designed to be easily extensible. The following example
+creates a `RandomColorShader`, which draws face colors at random from an input color
+map.
+
+For this example, we will use the `freud` library to generate the Voronoi diagram of a
+set of random points in two dimensions, using an off-axis viewport to get a perspective
+image.
+
+.. code-block:: python
+
+    import freud
+    import numpy as np
+
+    import svg3d
+    from svg3d import get_lookat_matrix, get_projection_matrix
+
+    # Colors that will be randomly assigned to our polygons
+    cmap = [
+        "#E9C99F", "#E7A27A", "#E57C62",
+        "#BC6561", "#8E616C", "#6B5F76",
+        "#48597A", "#13385A", "#031326"
+    ]
+
+
+    class RandomColorShader(svg3d.shaders.Shader):
+        def __init__(self, cmap=cmap, base_style=None, seed=0):
+            super().__init__()
+            self.rng = np.random.default_rng(seed=seed)
+            self.cmap = cmap
+
+        def __call__(self, face_index, mesh):
+            base_style = self.base_style if self.base_style is not None else {}
+            random_color = self.rng.choice(self.cmap)
+            return {**base_style, "fill": random_color}
+
+
+    # Generate polygons using freud
+    voro = freud.locality.Voronoi()
+    system = freud.data.make_random_system(box_size=10, num_points=128, is2D=True)
+    polytopes = voro.compute(system).polytopes
+
+    # Iterate over our 2D polygons, adding a single face for each one.
+    shader = RandomColorShader(base_style=style)
+    scene = [
+        svg3d.Mesh.from_vertices_and_faces(
+            vertices, faces=[[*range(len(vertices))]], shader=shader
+        )
+        for vertices in polytopes
+    ]
+
+    # Set up the camera and projection
+    pos_object = [0.0, 0.0, 0.0]  # "at" position
+    pos_camera = [0.0, 10.0, 8.0]  # "eye" position
+    vec_up = [0.0, -1.0, 0.0]  # "up" vector of camera.
+
+    z_near, z_far = 1.0, 200.0
+    aspect = 1.0
+    fov_y = 90.0
+
+    look_at = get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up)
+    projection = get_projection_matrix(
+        z_near=z_near, z_far=z_far, fov_y=fov_y, aspect=aspect
+    )
+
+    view = svg3d.View.from_look_at_and_projection(
+        look_at=look_at,
+        projection=projection,
+        scene=scene,
+    )
+
+    # Render the scene
+    svg3d.Engine([view]).render("perspective-voronoi.svg")
+
+Running the code above generates the following image:
+
+.. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/perspective-voronoi.svg
