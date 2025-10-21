@@ -183,8 +183,10 @@ Running the code above generates the following image:
 .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/cube-wireframe.svg
 
 
+.. _customshader:
+
 Custom Shaders
---------------
+==============
 
 The `svg3d` shader API is designed to be easily extensible. The following example
 creates a `RandomColorShader`, which draws face colors at random from an input color
@@ -259,5 +261,6 @@ image.
     # Render the scene
     svg3d.Engine([view]).render("perspective-voronoi.svg")
 
+Running the code above generates the following image:
 
 .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/perspective-voronoi.svg
