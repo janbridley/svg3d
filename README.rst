@@ -150,7 +150,8 @@ In addition to convenience methods, `svg3d` allows full control over the viewpor
        "stroke_width": "0.005",
    }
 
-   empty_shader = lambda face_index, mesh: {} # Does nothing, but illustrates the shader API
+   # We use a shader callable to apply our desired style to each facet.
+   flat_shader = lambda face_index, mesh: style
 
    pos_object = [0.0, 0.0, 0.0]  # "at" position
    pos_camera = [40, 40, 120]  # "eye" position
@@ -167,7 +168,7 @@ In addition to convenience methods, `svg3d` allows full control over the viewpor
 
    # A "scene" is a list of Mesh objects, which can be easily generated from raw data
    scene = [
-       svg3d.Mesh.from_vertices_and_faces(vertices, faces, shader=empty_shader)
+       svg3d.Mesh.from_vertices_and_faces(vertices, faces, shader=flat_shader)
    ]
 
    view = svg3d.View.from_look_at_and_projection(
