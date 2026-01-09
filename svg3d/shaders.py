@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 from svg3d.svg3d import Mesh
+from svg3d.utils import _stable_normalize
 
 DEFAULT_LIGHT = np.array([1, 1, 0.5], dtype=float)
 
@@ -78,7 +79,7 @@ def diffuse_lighting(
     base_style = base_style if base_style is not None else {}
     light_direction = light_direction if light_direction is not None else DEFAULT_LIGHT
 
-    normal = mesh.normals[face_index] / np.linalg.norm(mesh.normals[face_index])
+    normal = _stable_normalize(mesh.normals[face_index])
     shading = np.dot(normal, light_direction)
 
     new_color = _apply_shading(base_color, shading, absorbance=0.6)
@@ -224,7 +225,7 @@ class DiffuseShader(Shader):
         """
         base_style = self.base_style if self.base_style is not None else {}
 
-        normal = mesh.normals[face_index] / np.linalg.norm(mesh.normals[face_index])
+        normal = _stable_normalize(mesh.normals[face_index])
         shading = np.dot(normal, self.diffuse_light_direction)
 
         new_color = self._apply_shading(
