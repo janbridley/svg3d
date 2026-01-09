@@ -16,6 +16,8 @@ from typing import TYPE_CHECKING, Self
 import numpy as np
 import svgwrite
 
+from svg3d.utils import _stable_normalize
+
 if TYPE_CHECKING:
     import coxeter
 
@@ -96,7 +98,7 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
         # The LSP is unhappy, but this is correct. Each face has exactly 2 edge vectors
         normals = np.cross(*np.split(face_edge_vectors, 2, axis=1)).squeeze()
 
-        self._normals = normals / np.linalg.norm(normals)  # Return normalized
+        self._normals = _stable_normalize(normals)  # Return normalized
 
     @classmethod
     def from_coxeter(
