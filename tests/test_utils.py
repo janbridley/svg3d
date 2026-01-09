@@ -19,7 +19,7 @@ def test_pad_arrays(random_ragged_array):
     )
 
 
-@pytest.mark.parametrize("shape", [(1,), (2,), (3,), (5,)])
+@pytest.mark.parametrize("shape", [(1,), (2,), (3,), (5,), (99, 3)])
 def test_stable_normalize_zero_vector(shape):
     """Zero vector should return zero vector for various dimensions."""
     vec = np.zeros(shape)
