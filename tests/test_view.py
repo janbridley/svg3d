@@ -183,9 +183,10 @@ class TestOrthographicRendering:
         origin = _project_point(np.array([0.0, 0.0, 0.0]), view)
         x_point = _project_point(np.array([1.0, 0.0, 0.0]), view)
         y_point = _project_point(np.array([0.0, 1.0, 0.0]), view)
-        # x and y should project to different positions than origin
-        assert x_point != origin
-        assert y_point != origin
+        # x-axis projects to (1, 0), y-axis projects to (0, 1)
+        npt.assert_allclose(origin, (0.0, 0.0), atol=1e-10)
+        npt.assert_allclose(x_point, (1.0, 0.0), atol=1e-10)
+        npt.assert_allclose(y_point, (0.0, 1.0), atol=1e-10)
 
     def test_side_view_z_axis_vertical(self):
         """At elevation=0 (side view from +x), z axis should project vertically."""
@@ -193,27 +194,27 @@ class TestOrthographicRendering:
         # Looking from +x toward origin, z axis goes up (vertical on screen)
         origin = _project_point(np.array([0.0, 0.0, 0.0]), view)
         z_point = _project_point(np.array([0.0, 0.0, 1.0]), view)
-        # z axis should change y on screen (vertical), not x
-        npt.assert_allclose(origin[0], z_point[0], atol=1e-10)
-        assert z_point[1] != origin[1]  # y changes (vertical)
+        # z-axis projects to (0, 1) - vertical in screen space
+        npt.assert_allclose(origin, (0.0, 0.0), atol=1e-10)
+        npt.assert_allclose(z_point, (0.0, 1.0), atol=1e-10)
 
     def test_theta_0_view_from_x(self):
         """At theta=0, camera looks from +x toward -x."""
         view = View.orthographic(scene=[], theta=0, elevation=0)
-        # Point at +x should be behind camera (not visible or inverted)
-        # Point at +y should project to left of center
+        # y-axis should map to screen x direction
         origin = _project_point(np.array([0.0, 0.0, 0.0]), view)
         y_point = _project_point(np.array([0.0, 1.0, 0.0]), view)
-        # y direction should map to screen x
-        assert y_point[0] != origin[0]
+        npt.assert_allclose(origin, (0.0, 0.0), atol=1e-10)
+        npt.assert_allclose(y_point, (1.0, 0.0), atol=1e-10)
 
     def test_theta_90_view_from_y(self):
         """At theta=90, camera looks from +y toward -y."""
         view = View.orthographic(scene=[], theta=90, elevation=0)
+        # x-axis should map to screen -x direction
         origin = _project_point(np.array([0.0, 0.0, 0.0]), view)
         x_point = _project_point(np.array([1.0, 0.0, 0.0]), view)
-        # x direction should map to screen x
-        assert x_point[0] != origin[0]
+        npt.assert_allclose(origin, (0.0, 0.0), atol=1e-10)
+        npt.assert_allclose(x_point, (-1.0, 0.0), atol=1e-10)
 
     def test_orthographic_no_perspective_scaling(self):
         """Orthographic projection should not scale objects based on distance."""
