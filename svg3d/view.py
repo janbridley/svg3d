@@ -108,6 +108,52 @@ def get_projection_matrix(
     return m_projection.T
 
 
+def get_orthographic_matrix(
+    width: float,
+    height: float,
+    z_near: float = 1.0,
+    z_far: float = 200.0,
+) -> np.ndarray:
+    """Get an orthographic (parallel) projection matrix.
+
+    Unlike perspective projection, orthographic projection does not
+    create depth-based scaling - objects remain the same size regardless
+    of their distance from the camera.
+
+    This creates a symmetric orthographic projection centered on the view
+    direction, equivalent to glOrtho with left=-width/2, right=width/2,
+    bottom=-height/2, top=height/2.
+
+    Parameters
+    ----------
+    width : float
+        Width of the view volume.
+    height : float
+        Height of the view volume.
+    z_near : float
+        Distance to the near clipping plane. Default: 1.0
+    z_far : float
+        Distance to the far clipping plane. Default: 200.0
+
+    Returns
+    -------
+    np.ndarray
+        4x4 orthographic projection matrix.
+
+    References
+    ----------
+    .. [1] https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/orthographic-projection-matrix.html
+    .. [2] https://songho.ca/opengl/gl_projectionmatrix.html
+    """
+    m = np.zeros([4, 4])
+    m[0, 0] = 2 / width
+    m[1, 1] = 2 / height
+    m[2, 2] = -2 / (z_far - z_near)
+    m[3, 3] = 1
+    m[3, 2] = -(z_far + z_near) / (z_far - z_near)
+    return m.T
+
+
 class Viewport(NamedTuple):
     """A :obj:`~.Viewport` controls the visible area in a rendered SVG.
 
@@ -250,6 +296,50 @@ class View:
         return cls(
             look_at=isometric_view,
             projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
+            scene=scene,
+        )
+
+    @classmethod
+    def orthographic(
+        cls,
+        scene: list,
+        width: float = 2.0,
+        height: float = 2.0,
+        z_near: float = 1.0,
+        z_far: float = 200.0,
+        look_at: np.ndarray | None = None,
+    ):
+        """Create a View with true orthographic projection.
+
+        Uses the default isometric-style camera angle unless look_at is provided.
+        With orthographic projection, objects remain the same size regardless of
+        their distance from the camera - there is no perspective distortion.
+
+        Parameters
+        ----------
+        scene : list[Mesh]
+            An iterable of mesh objects to view.
+        width : float
+            Width of the view volume. Default: 2.0
+        height : float
+            Height of the view volume. Default: 2.0
+        z_near : float
+            Distance to the near clipping plane. Default: 1.0
+        z_far : float
+            Distance to the far clipping plane. Default: 200.0
+        look_at : np.ndarray, optional
+            Custom look-at matrix. If None, uses isometric view angle.
+
+        Returns
+        -------
+        View
+            A View with orthographic projection.
+        """
+        if look_at is None:
+            look_at = np.array(cls.ISOMETRIC_VIEW_MATRIX)
+        return cls(
+            look_at=look_at,
+            projection=get_orthographic_matrix(width, height, z_near, z_far),
             scene=scene,
         )
 
