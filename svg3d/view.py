@@ -323,10 +323,10 @@ class View:
     def orthographic(
         cls,
         scene: list,
-        width: float = 2.0,
-        height: float = 2.0,
-        phi: float = 45.0,
-        theta: float = 35.264,
+        scene_width: float = 2.0,
+        aspect_ratio: float = 1.0,
+        theta: float = 45.0,
+        elevation: float = 35.264,
         z_near: float = 1.0,
         z_far: float = 200.0,
     ):
@@ -339,16 +339,16 @@ class View:
         ----------
         scene : list[Mesh]
             An iterable of mesh objects to view.
-        width : float
+        scene_width : float
             Width of the view volume. Default: 2.0
-        height : float
-            Height of the view volume. Default: 2.0
-        phi : float
-            Azimuthal angle in degrees (rotation around z-axis).
-            0° = viewing from +x direction, 90° = from +y. Default: 45.0
+        aspect_ratio : float
+            Width/height ratio of the viewport. Default: 1.0
         theta : float
-            Elevation angle in degrees from z-axis toward xy-plane.
-            0° = top view (from +z), 90° = side view (from xy-plane). Default: 35.264 (isometric)
+            Azimuthal angle in degrees (rotation in xy plane).
+            0° = viewing from +x direction, 90° = from +y. Default: 45.0
+        elevation : float
+            Angle from xy plane toward z in degrees.
+            0° = horizontal view, 90° = top-down view. Default: 35.264 (isometric)
         z_near : float
             Distance to the near clipping plane. Default: 1.0
         z_far : float
@@ -360,31 +360,37 @@ class View:
             A View with orthographic projection.
         """
         # Convert to radians
-        phi_rad = math.radians(phi)
         theta_rad = math.radians(theta)
+        elevation_rad = math.radians(elevation)
 
-        # Camera position: phi rotates around z, theta tilts from z toward xy-plane
+        # Camera position using spherical coordinates
+        # elevation: angle from xy plane (0=horizontal, 90=top-down)
         distance = 100.0
-        x = distance * math.sin(theta_rad) * math.cos(phi_rad)
-        y = distance * math.sin(theta_rad) * math.sin(phi_rad)
-        z = distance * math.cos(theta_rad)
+        x = distance * math.cos(elevation_rad) * math.cos(theta_rad)
+        y = distance * math.cos(elevation_rad) * math.sin(theta_rad)
+        z = distance * math.sin(elevation_rad)
 
         pos_camera = np.array([x, y, z])
         pos_object = np.zeros(3)
 
-        # Rotate the up vector based on phi to handle pole cases
-        vec_up = np.array([
-            -math.sin(phi_rad),
-            math.cos(phi_rad),
-            0.0,
-        ])
+        # Up vector: for elevation < 90, use z-up rotated by theta
+        # For near top-down views, fall back to y-up
+        if abs(elevation) < 89.0:
+            vec_up = np.array([0.0, 0.0, 1.0])
+        else:
+            vec_up = np.array([
+                -math.sin(theta_rad),
+                math.cos(theta_rad),
+                0.0,
+            ])
 
         look_at = get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up)
-        viewport = Viewport.from_aspect(width / height)
+        viewport = Viewport.from_aspect(aspect_ratio)
+        height = scene_width / aspect_ratio
 
         return cls(
             look_at=look_at,
-            projection=get_orthographic_matrix(width, height, z_near, z_far),
+            projection=get_orthographic_matrix(scene_width, height, z_near, z_far),
             scene=scene,
             viewport=viewport,
         )
