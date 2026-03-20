@@ -325,8 +325,8 @@ class View:
         scene: list,
         width: float = 2.0,
         height: float = 2.0,
-        theta: float = 45.0,
-        phi: float = 35.264,
+        phi: float = 45.0,
+        theta: float = 35.264,
         z_near: float = 1.0,
         z_far: float = 200.0,
     ):
@@ -343,12 +343,12 @@ class View:
             Width of the view volume. Default: 2.0
         height : float
             Height of the view volume. Default: 2.0
-        theta : float
-            Azimuthal angle in degrees (rotation around z-axis).
-            0° = viewing from +x direction. Default: 45.0
         phi : float
-            Polar angle in degrees from +z axis.
-            0° = top view, 90° = side view. Default: 35.264 (isometric)
+            Azimuthal angle in degrees (rotation around z-axis).
+            0° = viewing from +x direction, 90° = from +y. Default: 45.0
+        theta : float
+            Elevation angle in degrees from z-axis toward xy-plane.
+            0° = top view (from +z), 90° = side view (from xy-plane). Default: 35.264 (isometric)
         z_near : float
             Distance to the near clipping plane. Default: 1.0
         z_far : float
@@ -359,25 +359,23 @@ class View:
         View
             A View with orthographic projection.
         """
-        # Convert spherical to Cartesian coordinates
-        theta_rad = math.radians(theta)
+        # Convert to radians
         phi_rad = math.radians(phi)
+        theta_rad = math.radians(theta)
 
-        # Camera position on a unit sphere, scaled by distance
-        # Using arbitrary distance since orthographic doesn't depend on it
+        # Camera position: phi rotates around z, theta tilts from z toward xy-plane
         distance = 100.0
-        x = distance * math.sin(phi_rad) * math.cos(theta_rad)
-        y = distance * math.sin(phi_rad) * math.sin(theta_rad)
-        z = distance * math.cos(phi_rad)
+        x = distance * math.sin(theta_rad) * math.cos(phi_rad)
+        y = distance * math.sin(theta_rad) * math.sin(phi_rad)
+        z = distance * math.cos(theta_rad)
 
         pos_camera = np.array([x, y, z])
         pos_object = np.zeros(3)
 
-        # Rotate the up vector based on theta to handle pole cases
-        # This ensures theta controls view rotation even at phi=0 or phi=180
+        # Rotate the up vector based on phi to handle pole cases
         vec_up = np.array([
-            -math.sin(theta_rad),
-            math.cos(theta_rad),
+            -math.sin(phi_rad),
+            math.cos(phi_rad),
             0.0,
         ])
 
