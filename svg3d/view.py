@@ -325,13 +325,13 @@ class View:
         scene: list,
         width: float = 2.0,
         height: float = 2.0,
+        theta: float = 45.0,
+        phi: float = 35.264,
         z_near: float = 1.0,
         z_far: float = 200.0,
-        look_at: np.ndarray | None = None,
     ):
         """Create a View with true orthographic projection.
 
-        Uses the default isometric-style camera angle unless look_at is provided.
         With orthographic projection, objects remain the same size regardless of
         their distance from the camera - there is no perspective distortion.
 
@@ -343,21 +343,47 @@ class View:
             Width of the view volume. Default: 2.0
         height : float
             Height of the view volume. Default: 2.0
+        theta : float
+            Azimuthal angle in degrees (rotation around z-axis).
+            0° = viewing from +x direction. Default: 45.0
+        phi : float
+            Polar angle in degrees from +z axis.
+            0° = top view, 90° = side view. Default: 35.264 (isometric)
         z_near : float
             Distance to the near clipping plane. Default: 1.0
         z_far : float
             Distance to the far clipping plane. Default: 200.0
-        look_at : np.ndarray, optional
-            Custom look-at matrix. If None, uses isometric view angle.
 
         Returns
         -------
         View
             A View with orthographic projection.
         """
-        if look_at is None:
-            look_at = np.array(cls.ISOMETRIC_VIEW_MATRIX)
+        # Convert spherical to Cartesian coordinates
+        theta_rad = math.radians(theta)
+        phi_rad = math.radians(phi)
+
+        # Camera position on a unit sphere, scaled by distance
+        # Using arbitrary distance since orthographic doesn't depend on it
+        distance = 100.0
+        x = distance * math.sin(phi_rad) * math.cos(theta_rad)
+        y = distance * math.sin(phi_rad) * math.sin(theta_rad)
+        z = distance * math.cos(phi_rad)
+
+        pos_camera = np.array([x, y, z])
+        pos_object = np.zeros(3)
+
+        # Rotate the up vector based on theta to handle pole cases
+        # This ensures theta controls view rotation even at phi=0 or phi=180
+        vec_up = np.array([
+            -math.sin(theta_rad),
+            math.cos(theta_rad),
+            0.0,
+        ])
+
+        look_at = get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up)
         viewport = Viewport.from_aspect(width / height)
+
         return cls(
             look_at=look_at,
             projection=get_orthographic_matrix(width, height, z_near, z_far),
