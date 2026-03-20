@@ -170,6 +170,26 @@ class Viewport(NamedTuple):
     height: float = 1.0
     """Height of the viewport."""
 
+    @property
+    def aspect_ratio(self) -> float:
+        """The aspect ratio (width/height) of the viewport."""
+        return self.width / self.height
+
+    def get_size(self, base_height: int = 512) -> tuple[int, int]:
+        """Get a recommended render size in pixels.
+
+        Parameters
+        ----------
+        base_height : int
+            Base height in pixels. Width is derived from aspect ratio.
+
+        Returns
+        -------
+        tuple[int, int]
+            (width, height) in pixels matching the viewport aspect ratio.
+        """
+        return (int(base_height * self.aspect_ratio), base_height)
+
     @classmethod
     def from_aspect(cls, aspect_ratio: float):
         """Create a :obj:`~.Viewport` with the given aspect ratio."""
@@ -337,10 +357,12 @@ class View:
         """
         if look_at is None:
             look_at = np.array(cls.ISOMETRIC_VIEW_MATRIX)
+        viewport = Viewport.from_aspect(width / height)
         return cls(
             look_at=look_at,
             projection=get_orthographic_matrix(width, height, z_near, z_far),
             scene=scene,
+            viewport=viewport,
         )
 
     @classmethod
