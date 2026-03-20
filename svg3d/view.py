@@ -149,8 +149,8 @@ def get_orthographic_matrix(
     m[0, 0] = 2 / width
     m[1, 1] = 2 / height
     m[2, 2] = -2 / (z_far - z_near)
+    m[2, 3] = -(z_far + z_near) / (z_far - z_near)
     m[3, 3] = 1
-    m[3, 2] = -(z_far + z_near) / (z_far - z_near)
     return m.T
 
 
