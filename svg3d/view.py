@@ -11,6 +11,7 @@ from .svg3d import Mesh
 
 def _rotation_matrix_x(angle_deg: float) -> np.ndarray:
     """4x4 rotation matrix around X axis."""
+    # angle_deg = -angle_deg # Enforce the convention that we want
     c, s = np.cos(np.radians(angle_deg)), np.sin(np.radians(angle_deg))
     return np.array(
         [[1, 0, 0, 0], [0, c, -s, 0], [0, s, c, 0], [0, 0, 0, 1]], dtype=np.float64
@@ -43,6 +44,14 @@ def get_scene_rotation_matrix(azimuth: float = 0.0, tilt: float = 0.0) -> np.nda
         4x4 rotation matrix.
     """
     return _rotation_matrix_z(azimuth) @ _rotation_matrix_x(tilt)
+
+
+def _get_camera_light_direction(look_at_matrix: np.ndarray) -> np.ndarray:
+    """Extract light direction from camera's look_at matrix."""
+    camera_forward = look_at_matrix[:3, 2]
+    light_direction = -camera_forward
+    norm = np.linalg.norm(light_direction)
+    return light_direction / norm if norm > 0 else light_direction
 
 
 def get_lookat_matrix(
@@ -302,6 +311,11 @@ class View:
     @viewport.setter
     def viewport(self, viewport: Viewport):
         self._viewport = viewport
+
+    @property
+    def camera_light_direction(self) -> np.ndarray:
+        """Get light direction relative to camera viewpoint."""
+        return _get_camera_light_direction(self._look_at)
 
     @classmethod
     def from_look_at_and_projection(
