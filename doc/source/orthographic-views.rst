@@ -306,22 +306,6 @@ Emphasizing Specific Faces
        tilt=15.0,  # Low tilt shows more of front
    )
 
-Game-Style Isometric
-^^^^^^^^^^^^^^^^^^^^
-
-Classic isometric games often use approximately 30° tilt for a pleasing look:
-
-.. code-block:: python
-
-   # Classic game-style isometric view
-   view_game = svg3d.View.orthographic(
-       scene=scene,
-       scene_width=3.0,
-       aspect_ratio=1.0,
-       azimuth=45.0,
-       tilt=30.0,
-   )
-
 .. _common_configurations:
 
 Common Configurations Reference
