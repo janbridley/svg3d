@@ -18,6 +18,7 @@ help:
 images:
 	@echo "Generating documentation images..."
 	@python generate_ortho_images.py
+	@python generate_cube_panel.py
 
 # HTML target: generate images first, then build
 html: images
