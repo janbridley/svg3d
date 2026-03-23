@@ -2,14 +2,14 @@
 """
 Generate example images for the orthographic views documentation.
 
-This script creates SVG files demonstrating theta rotation, elevation changes,
+This script creates SVG files demonstrating azimuth rotation, tilt changes,
 and comparison views for the ReadTheDocs documentation.
 """
 
-import numpy as np
 from coxeter.families import ArchimedeanFamily
 
 import svg3d
+from svg3d.view import Viewport
 
 # =============================================================================
 # Configuration
@@ -31,15 +31,14 @@ def create_scene():
     shape = ArchimedeanFamily.get_shape("Truncated Cube")
     return [
         svg3d.Mesh.from_coxeter(
-            shape,
-            shader=svg3d.shaders.DiffuseShader.from_style_dict(STYLE)
+            shape, shader=svg3d.shaders.DiffuseShader.from_style_dict(STYLE)
         )
     ]
 
 
 def render_grid(views, filename, positions, size=(1024, 512)):
     """Render multiple views in a grid layout."""
-    for view, vp in zip(views, positions):
+    for view, vp in zip(views, positions, strict=False):
         view.viewport = vp
     svg3d.Engine(views).render(filename, size=size)
     print(f"Wrote {filename}")
@@ -49,60 +48,65 @@ def render_grid(views, filename, positions, size=(1024, 512)):
 # Generate Images
 # =============================================================================
 
-def generate_theta_rotation():
-    """Generate 4 views showing theta rotation at 90° intervals."""
+
+def generate_azimuth_rotation():
+    """Generate 4 views showing azimuth rotation at 90° intervals."""
     scene = create_scene()
 
-    theta_values = [0, 90, 180, 270]
+    azimuth_values = [0, 90, 180, 270]
     views = []
 
-    for theta in theta_values:
+    for azimuth in azimuth_values:
         view = svg3d.View.orthographic(
             scene=scene,
             scene_width=3.0,
             aspect_ratio=1.0,
-            theta=theta,
-            elevation=30.0,
+            azimuth=azimuth,
+            tilt=30.0,
         )
         views.append(view)
 
     # Side by side (1x4)
     positions = [
-        svg3d.view.Viewport(-2.0, -0.5, 0.9, 1.0),   # theta=0
-        svg3d.view.Viewport(-1.0, -0.5, 0.9, 1.0),   # theta=90
-        svg3d.view.Viewport(0.0, -0.5, 0.9, 1.0),    # theta=180
-        svg3d.view.Viewport(1.0, -0.5, 0.9, 1.0),    # theta=270
+        Viewport(-2.0, -0.5, 0.9, 1.0),  # azimuth=0
+        Viewport(-1.0, -0.5, 0.9, 1.0),  # azimuth=90
+        Viewport(0.0, -0.5, 0.9, 1.0),  # azimuth=180
+        Viewport(1.0, -0.5, 0.9, 1.0),  # azimuth=270
     ]
 
-    render_grid(views, f"{OUTPUT_DIR}/ortho_theta_grid.svg", positions, size=(2048, 512))
+    render_grid(
+        views, f"{OUTPUT_DIR}/ortho_theta_grid.svg", positions, size=(2048, 512)
+    )
 
 
-def generate_elevation():
-    """Generate 4 views showing different elevation angles."""
+def generate_tilt():
+    """Generate 4 views showing different tilt angles."""
     scene = create_scene()
 
-    elevations = [0, 30, 60, 90]
+    tilts = [0, 30, 60, 90]
     views = []
 
-    for elevation in elevations:
+    for tilt in tilts:
         view = svg3d.View.orthographic(
             scene=scene,
             scene_width=3.0,
             aspect_ratio=1.0,
-            theta=45.0,
-            elevation=elevation,
+            azimuth=45.0,
+            tilt=tilt,
         )
         views.append(view)
 
     # Side by side (1x4)
     positions = [
-        svg3d.view.Viewport(-2.0, -0.5, 0.9, 1.0),   # elev=0
-        svg3d.view.Viewport(-1.0, -0.5, 0.9, 1.0),   # elev=30
-        svg3d.view.Viewport(0.0, -0.5, 0.9, 1.0),    # elev=60
-        svg3d.view.Viewport(1.0, -0.5, 0.9, 1.0),    # elev=90
+        Viewport(-2.0, -0.5, 0.9, 1.0),  # tilt=0
+        Viewport(-1.0, -0.5, 0.9, 1.0),  # tilt=30
+        Viewport(0.0, -0.5, 0.9, 1.0),  # tilt=60
+        Viewport(1.0, -0.5, 0.9, 1.0),  # tilt=90
     ]
 
-    render_grid(views, f"{OUTPUT_DIR}/ortho_elevation_grid.svg", positions, size=(2048, 512))
+    render_grid(
+        views, f"{OUTPUT_DIR}/ortho_elevation_grid.svg", positions, size=(2048, 512)
+    )
 
 
 def generate_scene_width():
@@ -117,19 +121,21 @@ def generate_scene_width():
             scene=scene,
             scene_width=width,
             aspect_ratio=1.0,
-            theta=45.0,
-            elevation=35.264,
+            azimuth=45.0,
+            tilt=35.264,
         )
         views.append(view)
 
     # Side by side
     positions = [
-        svg3d.view.Viewport(-0.5, -0.25, 0.3, 0.5),
-        svg3d.view.Viewport(-0.1, -0.25, 0.3, 0.5),
-        svg3d.view.Viewport(0.3, -0.25, 0.3, 0.5),
+        Viewport(-0.5, -0.25, 0.3, 0.5),
+        Viewport(-0.1, -0.25, 0.3, 0.5),
+        Viewport(0.3, -0.25, 0.3, 0.5),
     ]
 
-    render_grid(views, f"{OUTPUT_DIR}/ortho_scene_width.svg", positions, size=(768, 384))
+    render_grid(
+        views, f"{OUTPUT_DIR}/ortho_scene_width.svg", positions, size=(768, 384)
+    )
 
 
 def generate_axonometric_comparison():
@@ -144,67 +150,72 @@ def generate_axonometric_comparison():
 
     # Side by side
     positions = [
-        svg3d.view.Viewport(-0.5, -0.25, 0.3, 0.5),
-        svg3d.view.Viewport(-0.1, -0.25, 0.3, 0.5),
-        svg3d.view.Viewport(0.3, -0.25, 0.3, 0.5),
+        Viewport(-0.5, -0.25, 0.3, 0.5),
+        Viewport(-0.1, -0.25, 0.3, 0.5),
+        Viewport(0.3, -0.25, 0.3, 0.5),
     ]
 
-    render_grid(views, f"{OUTPUT_DIR}/ortho_axonometric.svg", positions, size=(768, 384))
+    render_grid(
+        views, f"{OUTPUT_DIR}/ortho_axonometric.svg", positions, size=(768, 384)
+    )
 
 
 def generate_custom_views():
-    """Generate comparison of custom elevation views."""
+    """Generate comparison of custom tilt views."""
     scene = create_scene()
 
-    # High elevation (emphasize top), low elevation (emphasize front), mid
+    # High tilt (emphasize top), low tilt (emphasize front), mid
     view_high = svg3d.View.orthographic(
         scene=scene,
         scene_width=3.0,
         aspect_ratio=1.0,
-        theta=45.0,
-        elevation=70.0,
+        azimuth=45.0,
+        tilt=70.0,
     )
 
     view_low = svg3d.View.orthographic(
         scene=scene,
         scene_width=3.0,
         aspect_ratio=1.0,
-        theta=45.0,
-        elevation=15.0,
+        azimuth=45.0,
+        tilt=15.0,
     )
 
     view_mid = svg3d.View.orthographic(
         scene=scene,
         scene_width=3.0,
         aspect_ratio=1.0,
-        theta=45.0,
-        elevation=30.0,
+        azimuth=45.0,
+        tilt=30.0,
     )
 
     views = [view_high, view_low, view_mid]
 
     positions = [
-        svg3d.view.Viewport(-0.5, -0.25, 0.3, 0.5),
-        svg3d.view.Viewport(-0.1, -0.25, 0.3, 0.5),
-        svg3d.view.Viewport(0.3, -0.25, 0.3, 0.5),
+        Viewport(-0.5, -0.25, 0.3, 0.5),
+        Viewport(-0.1, -0.25, 0.3, 0.5),
+        Viewport(0.3, -0.25, 0.3, 0.5),
     ]
 
-    render_grid(views, f"{OUTPUT_DIR}/ortho_custom_views.svg", positions, size=(768, 384))
+    render_grid(
+        views, f"{OUTPUT_DIR}/ortho_custom_views.svg", positions, size=(768, 384)
+    )
 
 
 # =============================================================================
 # Main
 # =============================================================================
 
+
 def main():
     print("Generating orthographic view example images...")
     print()
 
-    print("1. Theta rotation grid")
-    generate_theta_rotation()
+    print("1. Azimuth rotation grid")
+    generate_azimuth_rotation()
 
-    print("2. Elevation grid")
-    generate_elevation()
+    print("2. Tilt grid")
+    generate_tilt()
 
     print("3. Scene width comparison")
     generate_scene_width()
