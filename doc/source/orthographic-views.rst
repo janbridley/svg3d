@@ -62,6 +62,54 @@ The camera position is controlled by two angles:
   - ``elevation=45°``: Mid-angle view
   - ``elevation=90°``: Top-down view (looking straight down +z)
 
+.. _theta_example:
+
+Theta Rotation Example
+^^^^^^^^^^^^^^^^^^^^^^
+
+The following shows the same scene viewed from four angles at 90° intervals:
+
+.. image:: _static/ortho_theta_grid.svg
+
+*Left to right, top to bottom: theta=0° (from +x), theta=90° (from +y), theta=180° (from -x), theta=270° (from -y)*
+
+**Code:**
+
+.. code-block:: python
+
+   for theta in [0, 90, 180, 270]:
+       view = svg3d.View.orthographic(
+           scene=scene,
+           scene_width=3.0,
+           aspect_ratio=1.0,
+           theta=theta,
+           elevation=30.0,
+       )
+
+.. _elevation_example:
+
+Elevation Example
+^^^^^^^^^^^^^^^^^
+
+The following shows how elevation affects the vertical viewing angle:
+
+.. image:: _static/ortho_elevation_grid.svg
+
+*Left to right, top to bottom: elevation=0° (side), elevation=30°, elevation=60°, elevation=90° (top-down)*
+
+**Code:**
+
+.. code-block:: python
+
+   for elevation in [0, 30, 60, 90]:
+       view = svg3d.View.orthographic(
+           scene=scene,
+           scene_width=3.0,
+           aspect_ratio=1.0,
+           theta=45.0,
+           elevation=elevation,
+       )
+
 .. list-table::
    :header-rows: 1
 
@@ -74,21 +122,6 @@ The camera position is controlled by two angles:
    * - 90°
      - Top-down: z-axis collapses to a point
 
-**Example: Varying Theta**
-
-.. code-block:: python
-
-   # Four views at 90° intervals around the scene
-   for theta in [0, 90, 180, 270]:
-       view = svg3d.View.orthographic(
-           scene=scene,
-           scene_width=3.0,
-           aspect_ratio=1.0,
-           theta=theta,
-           elevation=30.0,
-       )
-       svg3d.Engine([view]).render(f"view_theta_{theta}.svg")
-
 .. _axonometric:
 
 Standard Axonometric Projections
@@ -96,6 +129,10 @@ Standard Axonometric Projections
 
 svg3d provides convenience methods for the three standard axonometric projections,
 all using true orthographic (parallel) projection:
+
+.. image:: _static/ortho_axonometric.svg
+
+*Left to right: Isometric, Dimetric, Trimetric*
 
 Isometric Projection
 ^^^^^^^^^^^^^^^^^^^^
@@ -108,12 +145,6 @@ All three coordinate axes are equally foreshortened. This is achieved with
    # Isometric: all axes equally foreshortened
    view = svg3d.View.isometric(scene, scene_width=4.0)
 
-.. list-table::
-   :header-rows: 1
-
-   * - Isometric View
-   * - .. image:: _static/iso.svg
-
 Dimetric Projection
 ^^^^^^^^^^^^^^^^^^^
 
@@ -124,12 +155,6 @@ Uses ``theta=45°`` and ``elevation=20.705°`` (arcsin(1/√8)).
 
    # Dimetric: two axes equally foreshortened
    view = svg3d.View.dimetric(scene, scene_width=4.0)
-
-.. list-table::
-   :header-rows: 1
-
-   * - Dimetric View
-   * - .. image:: _static/dim.svg
 
 Trimetric Projection
 ^^^^^^^^^^^^^^^^^^^^
@@ -142,12 +167,6 @@ All three coordinate axes have different foreshortening. Uses ``theta=30°`` and
    # Trimetric: all axes differently foreshortened
    view = svg3d.View.trimetric(scene, scene_width=4.0)
 
-.. list-table::
-   :header-rows: 1
-
-   * - Trimetric View
-   * - .. image:: _static/tri.svg
-
 .. _scene_width_aspect:
 
 Scene Width and Aspect Ratio
@@ -158,6 +177,12 @@ Scene Width
 
 The ``scene_width`` parameter controls the horizontal extent of the view volume.
 Larger values show more of the scene (zoom out), smaller values show less (zoom in).
+
+.. image:: _static/ortho_scene_width.svg
+
+*Left to right: scene_width=2.0 (zoomed in), scene_width=4.0, scene_width=8.0 (zoomed out)*
+
+**Code:**
 
 .. code-block:: python
 
@@ -216,6 +241,10 @@ Custom Views
 
 You can create custom axonometric views by choosing specific theta and elevation
 values tailored to your visualization needs.
+
+.. image:: _static/ortho_custom_views.svg
+
+*Left to right: elevation=70° (top emphasis), elevation=15° (front emphasis), elevation=30° (game-style)*
 
 Emphasizing Specific Faces
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
