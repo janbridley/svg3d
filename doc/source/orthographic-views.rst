@@ -73,24 +73,48 @@ is moved into position:
 Azimuth Rotation Example
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-The following shows the same scene rotated at four angles:
+The following shows the same scene rotated at four angles. Each view uses
+camera-relative lighting, so different faces become illuminated as the scene rotates:
 
-.. image:: _static/ortho_theta_grid.svg
+.. list-table::
+   :align: center
 
-*Left to right: azimuth=0°, azimuth=90°, azimuth=180°, azimuth=270°*
+   * - .. image:: _static/ortho_azimuth_0.svg
+          :align: center
+
+       azimuth=0°
+     - .. image:: _static/ortho_azimuth_30.svg
+          :align: center
+
+       azimuth=30°
+     - .. image:: _static/ortho_azimuth_60.svg
+          :align: center
+
+       azimuth=60°
+     - .. image:: _static/ortho_azimuth_90.svg
+          :align: center
+
+       azimuth=90°
 
 **Code:**
 
 .. code-block:: python
 
    for azimuth in [0, 90, 180, 270]:
+       # Create view first with empty scene
        view = svg3d.View.orthographic(
-           scene=scene,
+           scene=[],
            scene_width=3.0,
            aspect_ratio=1.0,
            azimuth=azimuth,
            tilt=30.0,
        )
+       # Create mesh with camera-relative lighting
+       shader = svg3d.shaders.DiffuseShader.from_view(view, style)
+       mesh = svg3d.Mesh.from_coxeter(shape, shader=shader)
+       view.scene = [mesh]
+
+       svg3d.Engine([view]).render(f"azimuth_{azimuth}.svg")
 
 .. _tilt_example:
 

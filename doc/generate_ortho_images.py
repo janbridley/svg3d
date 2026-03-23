@@ -6,7 +6,7 @@ This script creates SVG files demonstrating azimuth rotation, tilt changes,
 and comparison views for the ReadTheDocs documentation.
 """
 
-from coxeter.families import ArchimedeanFamily
+from coxeter.families import ArchimedeanFamily, UniformPrismFamily
 
 import svg3d
 from svg3d.view import Viewport
@@ -58,34 +58,33 @@ def render_grid(views, filename, positions, size=(1024, 512)):
 
 
 def generate_azimuth_rotation():
-    """Generate 4 views showing azimuth rotation at 90° intervals."""
-    scene = create_scene()
+    """Generate 4 separate views showing azimuth rotation at 90° intervals.
 
-    azimuth_values = [0, 90, 180, 270]
-    views = []
+    Each view uses camera-relative lighting, so different faces become
+    illuminated as the scene rotates.
+    """
+    shape = ArchimedeanFamily.get_shape("Truncated Octahedron")
+    shape = UniformPrismFamily.get_shape(5)
+    azimuth_values = [0, 30, 60, 90]
 
     for azimuth in azimuth_values:
+        # Create view first with empty scene
         view = svg3d.View.orthographic(
-            scene=scene,
+            scene=[],
             scene_width=3.0,
             aspect_ratio=1.0,
             azimuth=azimuth,
             tilt=30.0,
         )
-        views.append(view)
+        # Create mesh with camera-relative lighting
+        shader = svg3d.shaders.DiffuseShader.from_view(view, STYLE)
+        mesh = svg3d.Mesh.from_coxeter(shape, shader=shader)
+        view.scene = [mesh]
 
-    # Side by side (1x4) - each viewport is 1.0x1.0 (square)
-    # Total extent: x in [-2.0, 2.0] (width 4.0), y in [-0.5, 0.5] (height 1.0)
-    positions = [
-        Viewport(-2.0, -0.5, 1.0, 1.0),  # azimuth=0
-        Viewport(-1.0, -0.5, 1.0, 1.0),  # azimuth=90
-        Viewport(0.0, -0.5, 1.0, 1.0),  # azimuth=180
-        Viewport(1.0, -0.5, 1.0, 1.0),  # azimuth=270
-    ]
-
-    render_grid(
-        views, f"{OUTPUT_DIR}/ortho_theta_grid.svg", positions, size=(2048, 512)
-    )
+        # Render each as a separate SVG
+        filename = f"{OUTPUT_DIR}/ortho_azimuth_{azimuth}.svg"
+        svg3d.Engine([view]).render(filename, size=(256, 256))
+        print(f"Wrote {filename}")
 
 
 def generate_tilt():
