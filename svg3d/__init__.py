@@ -5,6 +5,7 @@ from .view import (
     get_lookat_matrix,
     get_orthographic_matrix,
     get_projection_matrix,
+    get_scene_rotation_matrix,
 )
 
 __all__ = [
@@ -13,6 +14,7 @@ __all__ = [
     "get_lookat_matrix",
     "get_orthographic_matrix",
     "get_projection_matrix",
+    "get_scene_rotation_matrix",
     "View",
     "shaders",
 ]

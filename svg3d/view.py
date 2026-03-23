@@ -9,6 +9,48 @@ import numpy as np
 from .svg3d import Mesh
 
 
+def _rotation_matrix_x(angle_deg: float) -> np.ndarray:
+    """4x4 rotation matrix around X axis."""
+    c, s = np.cos(np.radians(angle_deg)), np.sin(np.radians(angle_deg))
+    return np.array([
+        [1, 0, 0, 0],
+        [0, c, -s, 0],
+        [0, s, c, 0],
+        [0, 0, 0, 1]
+    ], dtype=np.float64)
+
+
+def _rotation_matrix_z(angle_deg: float) -> np.ndarray:
+    """4x4 rotation matrix around Z axis."""
+    c, s = np.cos(np.radians(angle_deg)), np.sin(np.radians(angle_deg))
+    return np.array([
+        [c, -s, 0, 0],
+        [s, c, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+    ], dtype=np.float64)
+
+
+def get_scene_rotation_matrix(azimuth: float = 0.0, tilt: float = 0.0) -> np.ndarray:
+    """Create a scene rotation matrix from azimuth and tilt angles.
+
+    Uses extrinsic rotation: Rz(azimuth) @ Rx(tilt)
+
+    Parameters
+    ----------
+    azimuth : float
+        Rotation around Z axis in degrees (horizontal spin). Default: 0.0
+    tilt : float
+        Rotation around X axis in degrees (vertical tilt). Default: 0.0
+
+    Returns
+    -------
+    np.ndarray
+        4x4 rotation matrix.
+    """
+    return _rotation_matrix_z(azimuth) @ _rotation_matrix_x(tilt)
+
+
 def get_lookat_matrix(
     pos_object: np.ndarray,
     pos_camera: np.ndarray,
@@ -288,15 +330,16 @@ class View:
         )
 
     @classmethod
-    def isometric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0):
-        """Create a :obj:`~.View` based on an isometric projection.
+    def isometric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0,
+                  azimuth: float = 0.0, tilt: float = 0.0):
+        """Create an isometric view with optional scene rotation.
 
         In an isometric projection, the scale along each coordinate axis is identical.
         All three axes are equally foreshortened by a factor of √(2/3) ≈ 0.816.
         This is a parallel projection method, meaning that objects remain the same size
         regardless of their position from the camera.
 
-        The isometric view uses:
+        The isometric camera uses:
         - theta = 45° (azimuthal rotation in xy plane)
         - elevation = 35.264° (arcsin(1/√3), angle from xy plane)
 
@@ -308,20 +351,43 @@ class View:
             Width of the view volume. Default: 2.0
         aspect_ratio : float
             Width/height ratio of the viewport. Default: 1.0
+        azimuth : float
+            Additional scene rotation around Z axis in degrees. Default: 0.0
+        tilt : float
+            Additional scene rotation around X axis in degrees. Default: 0.0
 
         Returns
         -------
         View
             A View with true orthographic isometric projection.
         """
-        # Isometric: all axes equally foreshortened
-        # theta = 45°, elevation = arcsin(1/√3) ≈ 35.264°
-        return cls.orthographic(
+        # Isometric camera position
+        distance = 100.0
+        theta_rad = math.radians(45.0)
+        elevation_rad = math.radians(35.264389682754654)
+
+        x = distance * math.cos(elevation_rad) * math.cos(theta_rad)
+        y = distance * math.cos(elevation_rad) * math.sin(theta_rad)
+        z = distance * math.sin(elevation_rad)
+
+        pos_camera = np.array([x, y, z])
+        pos_object = np.zeros(3)
+        vec_up = np.array([0.0, 0.0, 1.0])
+
+        look_at = get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up)
+
+        # Apply scene rotation
+        scene_rotation = get_scene_rotation_matrix(azimuth, tilt)
+        combined_look_at = scene_rotation @ look_at
+
+        viewport = Viewport.from_aspect(aspect_ratio)
+        height = scene_width / aspect_ratio
+
+        return cls(
+            look_at=combined_look_at,
+            projection=get_orthographic_matrix(scene_width, height),
             scene=scene,
-            scene_width=scene_width,
-            aspect_ratio=aspect_ratio,
-            theta=45.0,
-            elevation=35.264389682754654,  # arcsin(1/√3) in degrees
+            viewport=viewport,
         )
 
     @classmethod
@@ -330,15 +396,12 @@ class View:
         scene: list,
         scene_width: float = 2.0,
         aspect_ratio: float = 1.0,
-        theta: float = 45.0,
-        elevation: float = 35.264,
+        azimuth: float = 0.0,
+        tilt: float = 0.0,
         z_near: float = 1.0,
         z_far: float = 200.0,
     ):
-        """Create a View with true orthographic projection.
-
-        With orthographic projection, objects remain the same size regardless of
-        their distance from the camera - there is no perspective distortion.
+        """Create a View with orthographic projection and scene rotation.
 
         Parameters
         ----------
@@ -348,12 +411,10 @@ class View:
             Width of the view volume. Default: 2.0
         aspect_ratio : float
             Width/height ratio of the viewport. Default: 1.0
-        theta : float
-            Azimuthal angle in degrees (rotation in xy plane).
-            0° = viewing from +x direction, 90° = from +y. Default: 45.0
-        elevation : float
-            Angle from xy plane toward z in degrees.
-            0° = horizontal view, 90° = top-down view. Default: 35.264 (isometric)
+        azimuth : float
+            Scene rotation around Z axis in degrees. Default: 0.0
+        tilt : float
+            Scene rotation around X axis in degrees. Default: 0.0
         z_near : float
             Distance to the near clipping plane. Default: 1.0
         z_far : float
@@ -364,46 +425,31 @@ class View:
         View
             A View with orthographic projection.
         """
-        # Convert to radians
-        theta_rad = math.radians(theta)
-        elevation_rad = math.radians(elevation)
-
-        # Camera position using spherical coordinates
-        # elevation: angle from xy plane (0=horizontal, 90=top-down)
+        # Fixed camera position - looking down Z axis at origin
         distance = 100.0
-        x = distance * math.cos(elevation_rad) * math.cos(theta_rad)
-        y = distance * math.cos(elevation_rad) * math.sin(theta_rad)
-        z = distance * math.sin(elevation_rad)
-
-        pos_camera = np.array([x, y, z])
+        pos_camera = np.array([0.0, 0.0, distance])
         pos_object = np.zeros(3)
-
-        # Up vector: for elevation < 90, use z-up rotated by theta
-        # For near top-down views, fall back to y-up
-        if abs(elevation) < 89.0:
-            vec_up = np.array([0.0, 0.0, 1.0])
-        else:
-            vec_up = np.array(
-                [
-                    -math.sin(theta_rad),
-                    math.cos(theta_rad),
-                    0.0,
-                ]
-            )
+        vec_up = np.array([0.0, 1.0, 0.0])
 
         look_at = get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up)
+
+        # Apply scene rotation
+        scene_rotation = get_scene_rotation_matrix(azimuth, tilt)
+        combined_look_at = scene_rotation @ look_at
+
         viewport = Viewport.from_aspect(aspect_ratio)
         height = scene_width / aspect_ratio
 
         return cls(
-            look_at=look_at,
+            look_at=combined_look_at,
             projection=get_orthographic_matrix(scene_width, height, z_near, z_far),
             scene=scene,
             viewport=viewport,
         )
 
     @classmethod
-    def dimetric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0):
+    def dimetric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0,
+                 azimuth: float = 0.0, tilt: float = 0.0):
         """Create a :obj:`~.View` based on a dimetric projection.
 
         In a dimetric projection, the scale along two out of three axes is identical.
@@ -424,6 +470,10 @@ class View:
             Width of the view volume. Default: 2.0
         aspect_ratio : float
             Width/height ratio of the viewport. Default: 1.0
+        azimuth : float
+            Additional scene rotation around Z axis in degrees. Default: 0.0
+        tilt : float
+            Additional scene rotation around X axis in degrees. Default: 0.0
 
         Returns
         -------
@@ -434,19 +484,35 @@ class View:
         ----------
         .. [1] https://www.math.tu-cottbus.de/~klempp/Folie12.pdf
         """
-        # Dimetric: two axes equally foreshortened
-        # theta = 45°, elevation = arcsin(1/√8) ≈ 20.705°
-        # This gives x:y:z foreshortening of ~0.94:0.94:0.47
-        return cls.orthographic(
+        # Dimetric camera: theta=45, elevation=20.705
+        distance = 100.0
+        theta_rad = math.radians(45.0)
+        elevation_rad = math.radians(20.704811054635432)
+
+        x = distance * math.cos(elevation_rad) * math.cos(theta_rad)
+        y = distance * math.cos(elevation_rad) * math.sin(theta_rad)
+        z = distance * math.sin(elevation_rad)
+
+        pos_camera = np.array([x, y, z])
+        pos_object = np.zeros(3)
+        vec_up = np.array([0.0, 0.0, 1.0])
+
+        look_at = get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up)
+        scene_rotation = get_scene_rotation_matrix(azimuth, tilt)
+        combined_look_at = scene_rotation @ look_at
+
+        viewport = Viewport.from_aspect(aspect_ratio)
+
+        return cls(
+            look_at=combined_look_at,
+            projection=get_orthographic_matrix(scene_width, scene_width / aspect_ratio),
             scene=scene,
-            scene_width=scene_width,
-            aspect_ratio=aspect_ratio,
-            theta=45.0,
-            elevation=20.704811054635432,  # arcsin(1/√8) in degrees
+            viewport=viewport,
         )
 
     @classmethod
-    def trimetric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0):
+    def trimetric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0,
+                  azimuth: float = 0.0, tilt: float = 0.0):
         """Create a :obj:`~.View` based on a trimetric projection.
 
         In a trimetric projection, each axis is scaled independently. This results in a
@@ -469,20 +535,40 @@ class View:
             Width of the view volume. Default: 2.0
         aspect_ratio : float
             Width/height ratio of the viewport. Default: 1.0
+        azimuth : float
+            Additional scene rotation around Z axis in degrees. Default: 0.0
+        tilt : float
+            Additional scene rotation around X axis in degrees. Default: 0.0
 
         Returns
         -------
         View
             A View with true orthographic trimetric projection.
         """
-        # Trimetric: all three axes have different foreshortening
-        # Using theta=30°, elevation=25° gives distinct foreshortening for each axis
-        return cls.orthographic(
+        # Trimetric camera: theta=30, elevation=25
+        distance = 100.0
+        theta_rad = math.radians(30.0)
+        elevation_rad = math.radians(25.0)
+
+        x = distance * math.cos(elevation_rad) * math.cos(theta_rad)
+        y = distance * math.cos(elevation_rad) * math.sin(theta_rad)
+        z = distance * math.sin(elevation_rad)
+
+        pos_camera = np.array([x, y, z])
+        pos_object = np.zeros(3)
+        vec_up = np.array([0.0, 0.0, 1.0])
+
+        look_at = get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up)
+        scene_rotation = get_scene_rotation_matrix(azimuth, tilt)
+        combined_look_at = scene_rotation @ look_at
+
+        viewport = Viewport.from_aspect(aspect_ratio)
+
+        return cls(
+            look_at=combined_look_at,
+            projection=get_orthographic_matrix(scene_width, scene_width / aspect_ratio),
             scene=scene,
-            scene_width=scene_width,
-            aspect_ratio=aspect_ratio,
-            theta=30.0,
-            elevation=25.0,
+            viewport=viewport,
         )
 
 
