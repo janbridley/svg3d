@@ -288,35 +288,40 @@ class View:
         )
 
     @classmethod
-    def isometric(cls, scene, fov: float = 1.0, distance: float = 100.0):
+    def isometric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0):
         """Create a :obj:`~.View` based on an isometric projection.
 
         In an isometric projection, the scale along each coordinate axis is identical.
+        All three axes are equally foreshortened by a factor of √(2/3) ≈ 0.816.
         This is a parallel projection method, meaning that objects remain the same size
-        regardless of their position from the camera. This is useful in diagrams and
-        technical renderings but may be undesirable for realistic scenes.
+        regardless of their position from the camera.
 
-        .. # TODO: Give example image or diagram showing an isometric projection
+        The isometric view uses:
+        - theta = 45° (azimuthal rotation in xy plane)
+        - elevation = 35.264° (arcsin(1/√3), angle from xy plane)
 
         Parameters
         ----------
         scene : list[Mesh]
             An iterable of mesh objects to view.
-        fov: float
-            Field of view, in degrees. Should be in the open range (0.0, 180.0). Default
-            value: 1.0
-        distance: float
-            Distance of the viewer from the origin. Default value: 100.0
-        """
-        # Equivalent to a 45 degree rotation about the X axis and an atan(1/sqrt(2))
-        # degree rotation about the z axis
-        isometric_view = cls.ISOMETRIC_VIEW_MATRIX
-        isometric_view[-1, 2] = -distance
+        scene_width : float
+            Width of the view volume. Default: 2.0
+        aspect_ratio : float
+            Width/height ratio of the viewport. Default: 1.0
 
-        return cls(
-            look_at=isometric_view,
-            projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
+        Returns
+        -------
+        View
+            A View with true orthographic isometric projection.
+        """
+        # Isometric: all axes equally foreshortened
+        # theta = 45°, elevation = arcsin(1/√3) ≈ 35.264°
+        return cls.orthographic(
             scene=scene,
+            scene_width=scene_width,
+            aspect_ratio=aspect_ratio,
+            theta=45.0,
+            elevation=35.264389682754654,  # arcsin(1/√3) in degrees
         )
 
     @classmethod
@@ -378,11 +383,13 @@ class View:
         if abs(elevation) < 89.0:
             vec_up = np.array([0.0, 0.0, 1.0])
         else:
-            vec_up = np.array([
-                -math.sin(theta_rad),
-                math.cos(theta_rad),
-                0.0,
-            ])
+            vec_up = np.array(
+                [
+                    -math.sin(theta_rad),
+                    math.cos(theta_rad),
+                    0.0,
+                ]
+            )
 
         look_at = get_lookat_matrix(pos_object, pos_camera, vec_up=vec_up)
         viewport = Viewport.from_aspect(aspect_ratio)
@@ -396,71 +403,86 @@ class View:
         )
 
     @classmethod
-    def dimetric(cls, scene, fov: float = 1.0, distance: float = 100.0):
+    def dimetric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0):
         """Create a :obj:`~.View` based on a dimetric projection.
 
         In a dimetric projection, the scale along two out of three axes is identical.
         This strikes a balance between the simplicity and interpretability of isometric
         projections and the improved sense of realism afforded by trimetric projections.
 
-        This is a parallel projection method, meaning that objects remain the same size
-        regardless of their position from the camera. This is useful in diagrams and
-        technical renderings but may be undesirable for realistic scenes.
-
-        .. # TODO: Give example image or diagram showing an dimetric projection
+        This implementation uses a common dimetric configuration where the x and y axes
+        have equal foreshortening (~0.94) while the z axis has different foreshortening
+        (~0.47). This is achieved with:
+        - theta = 45° (azimuthal rotation in xy plane)
+        - elevation = 20.705° (arcsin(1/√8), angle from xy plane)
 
         Parameters
         ----------
         scene : list[Mesh]
             An iterable of mesh objects to view.
-        fov: float
-            Field of view, in degrees. Should be in the open range (0.0, 180.0). Default
-            value: 1.0
-        distance: float
-            Distance of the viewer from the origin. Default value: 100.0
+        scene_width : float
+            Width of the view volume. Default: 2.0
+        aspect_ratio : float
+            Width/height ratio of the viewport. Default: 1.0
+
+        Returns
+        -------
+        View
+            A View with true orthographic dimetric projection.
+
+        References
+        ----------
+        .. [1] https://www.math.tu-cottbus.de/~klempp/Folie12.pdf
         """
-        # TODO: reimplement as https://faculty.sites.iastate.edu/jia/files/inline-files/projection-classify.pdf
-        camera_position = np.array([8, 8, 21]) / math.sqrt(569) * distance
-        return cls(
-            look_at=get_lookat_matrix(
-                pos_object=cls.DEFAULT_OBJECT_POSITION, pos_camera=camera_position
-            ),
-            projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
+        # Dimetric: two axes equally foreshortened
+        # theta = 45°, elevation = arcsin(1/√8) ≈ 20.705°
+        # This gives x:y:z foreshortening of ~0.94:0.94:0.47
+        return cls.orthographic(
             scene=scene,
+            scene_width=scene_width,
+            aspect_ratio=aspect_ratio,
+            theta=45.0,
+            elevation=20.704811054635432,  # arcsin(1/√8) in degrees
         )
 
     @classmethod
-    def trimetric(cls, scene, fov: float = 1.0, distance: float = 100.0):
+    def trimetric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0):
         """Create a :obj:`~.View` based on a trimetric projection.
 
         In a trimetric projection, each axis is scaled independently. This results in a
-        more "natural" scene than isometric and trimetric views, as the foreshortening
+        more "natural" scene than isometric and dimetric views, as the foreshortening
         of each axis provides a sense of depth to the scene.
 
-
         This is a parallel projection method, meaning that objects remain the same size
-        regardless of their position from the camera. This is useful in diagrams and
-        technical renderings but may be undesirable for realistic scenes.
+        regardless of their position from the camera.
 
-        .. # TODO: Give example image or diagram showing a trimetric projection
+        This implementation uses angles chosen to give distinct foreshortening for all
+        three axes:
+        - theta = 30° (azimuthal rotation in xy plane)
+        - elevation = 25° (angle from xy plane)
 
         Parameters
         ----------
         scene : list[Mesh]
             An iterable of mesh objects to view.
-        fov: float
-            Field of view, in degrees. Should be in the open range (0.0, 180.0). Default
-            value: 1.0
-        distance: float
-            Distance of the viewer from the origin. Default value: 100.0
+        scene_width : float
+            Width of the view volume. Default: 2.0
+        aspect_ratio : float
+            Width/height ratio of the viewport. Default: 1.0
+
+        Returns
+        -------
+        View
+            A View with true orthographic trimetric projection.
         """
-        camera_position = np.array([1 / 7, 1 / 14, 3 / 14]) * math.sqrt(14) * distance
-        return cls(
-            look_at=get_lookat_matrix(
-                pos_object=cls.DEFAULT_OBJECT_POSITION, pos_camera=camera_position
-            ),
-            projection=get_projection_matrix(z_near=1.0, z_far=200.0, fov_y=fov),
+        # Trimetric: all three axes have different foreshortening
+        # Using theta=30°, elevation=25° gives distinct foreshortening for each axis
+        return cls.orthographic(
             scene=scene,
+            scene_width=scene_width,
+            aspect_ratio=aspect_ratio,
+            theta=30.0,
+            elevation=25.0,
         )
 
 

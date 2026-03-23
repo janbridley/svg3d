@@ -280,8 +280,10 @@ class TestOrthographicRendering:
         low_z = _project_point(z_point, view_low)
         high_origin = _project_point(origin, view_high)
         high_z = _project_point(z_point, view_high)
-        # Vertical displacement of z point relative to origin
+
         low_dy = abs(low_z[1] - low_origin[1])
         high_dy = abs(high_z[1] - high_origin[1])
-        # Lower elevation should show z axis more vertically
+        # At elevation=10°, z-axis projects more vertically than at elevation=80°
+        npt.assert_allclose(low_dy, 0.984807753012208, atol=1e-10)
+        npt.assert_allclose(high_dy, 0.17364817766693041, atol=1e-10)
         assert low_dy > high_dy
