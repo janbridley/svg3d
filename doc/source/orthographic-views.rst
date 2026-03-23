@@ -71,7 +71,7 @@ The following shows the same scene viewed from four angles at 90° intervals:
 
 .. image:: _static/ortho_theta_grid.svg
 
-*Left to right, top to bottom: theta=0° (from +x), theta=90° (from +y), theta=180° (from -x), theta=270° (from -y)*
+*Left to right: theta=0° (from +x), theta=90° (from +y), theta=180° (from -x), theta=270° (from -y)*
 
 **Code:**
 
@@ -95,7 +95,7 @@ The following shows how elevation affects the vertical viewing angle:
 
 .. image:: _static/ortho_elevation_grid.svg
 
-*Left to right, top to bottom: elevation=0° (side), elevation=30°, elevation=60°, elevation=90° (top-down)*
+*Left to right: elevation=0° (side), elevation=30°, elevation=60°, elevation=90° (top-down)*
 
 **Code:**
 
