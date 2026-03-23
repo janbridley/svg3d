@@ -74,7 +74,7 @@ Quickstart Example
    import svg3d
 
    style = {
-       "fill": "#00B2A6",
+       "fill": "#71618D",
        "fill_opacity": "0.85",
        "stroke": "black",
        "stroke_linejoin": "round",
@@ -91,9 +91,9 @@ Quickstart Example
    ]
 
    # Convenience views: isometric, dimetric, and trimetric (all orthographic)
-   iso = svg3d.View.isometric(scene, scene_width=4.0)
-   dim = svg3d.View.dimetric(scene, scene_width=4.0)
-   tri = svg3d.View.trimetric(scene, scene_width=4.0)
+   iso = svg3d.View.isometric(scene, scene_width=3.0)
+   dim = svg3d.View.dimetric(scene, scene_width=3.0)
+   tri = svg3d.View.trimetric(scene, scene_width=3.0)
 
    for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
        svg3d.Engine([view]).render(f"{view_type}.svg")
