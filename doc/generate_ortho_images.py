@@ -40,7 +40,15 @@ def render_grid(views, filename, positions, size=(1024, 512)):
     """Render multiple views in a grid layout."""
     for view, vp in zip(views, positions, strict=False):
         view.viewport = vp
-    svg3d.Engine(views).render(filename, size=size)
+
+    # Calculate viewBox from the combined extent of all viewports
+    min_x = min(vp.minx for vp in positions)
+    min_y = min(vp.miny for vp in positions)
+    max_x = max(vp.minx + vp.width for vp in positions)
+    max_y = max(vp.miny + vp.height for vp in positions)
+    viewbox = f"{min_x} {min_y} {max_x - min_x} {max_y - min_y}"
+
+    svg3d.Engine(views).render(filename, size=size, viewbox=viewbox)
     print(f"Wrote {filename}")
 
 
@@ -66,12 +74,13 @@ def generate_azimuth_rotation():
         )
         views.append(view)
 
-    # Side by side (1x4)
+    # Side by side (1x4) - each viewport is 1.0x1.0 (square)
+    # Total extent: x in [-2.0, 2.0] (width 4.0), y in [-0.5, 0.5] (height 1.0)
     positions = [
-        Viewport(-2.0, -0.5, 0.9, 1.0),  # azimuth=0
-        Viewport(-1.0, -0.5, 0.9, 1.0),  # azimuth=90
-        Viewport(0.0, -0.5, 0.9, 1.0),  # azimuth=180
-        Viewport(1.0, -0.5, 0.9, 1.0),  # azimuth=270
+        Viewport(-2.0, -0.5, 1.0, 1.0),  # azimuth=0
+        Viewport(-1.0, -0.5, 1.0, 1.0),  # azimuth=90
+        Viewport(0.0, -0.5, 1.0, 1.0),  # azimuth=180
+        Viewport(1.0, -0.5, 1.0, 1.0),  # azimuth=270
     ]
 
     render_grid(
@@ -96,12 +105,12 @@ def generate_tilt():
         )
         views.append(view)
 
-    # Side by side (1x4)
+    # Side by side (1x4) - each viewport is 1.0x1.0 (square)
     positions = [
-        Viewport(-2.0, -0.5, 0.9, 1.0),  # tilt=0
-        Viewport(-1.0, -0.5, 0.9, 1.0),  # tilt=30
-        Viewport(0.0, -0.5, 0.9, 1.0),  # tilt=60
-        Viewport(1.0, -0.5, 0.9, 1.0),  # tilt=90
+        Viewport(-2.0, -0.5, 1.0, 1.0),  # tilt=0
+        Viewport(-1.0, -0.5, 1.0, 1.0),  # tilt=30
+        Viewport(0.0, -0.5, 1.0, 1.0),  # tilt=60
+        Viewport(1.0, -0.5, 1.0, 1.0),  # tilt=90
     ]
 
     render_grid(
@@ -126,15 +135,16 @@ def generate_scene_width():
         )
         views.append(view)
 
-    # Side by side
+    # Side by side (1x3) - each viewport is 1.0x1.0 (square)
+    # Total extent: x in [-1.5, 1.5] (width 3.0), y in [-0.5, 0.5] (height 1.0)
     positions = [
-        Viewport(-0.5, -0.25, 0.3, 0.5),
-        Viewport(-0.1, -0.25, 0.3, 0.5),
-        Viewport(0.3, -0.25, 0.3, 0.5),
+        Viewport(-1.5, -0.5, 1.0, 1.0),
+        Viewport(-0.5, -0.5, 1.0, 1.0),
+        Viewport(0.5, -0.5, 1.0, 1.0),
     ]
 
     render_grid(
-        views, f"{OUTPUT_DIR}/ortho_scene_width.svg", positions, size=(768, 384)
+        views, f"{OUTPUT_DIR}/ortho_scene_width.svg", positions, size=(768, 256)
     )
 
 
@@ -148,15 +158,15 @@ def generate_axonometric_comparison():
 
     views = [iso, dim, tri]
 
-    # Side by side
+    # Side by side (1x3) - each viewport is 1.0x1.0 (square)
     positions = [
-        Viewport(-0.5, -0.25, 0.3, 0.5),
-        Viewport(-0.1, -0.25, 0.3, 0.5),
-        Viewport(0.3, -0.25, 0.3, 0.5),
+        Viewport(-1.5, -0.5, 1.0, 1.0),
+        Viewport(-0.5, -0.5, 1.0, 1.0),
+        Viewport(0.5, -0.5, 1.0, 1.0),
     ]
 
     render_grid(
-        views, f"{OUTPUT_DIR}/ortho_axonometric.svg", positions, size=(768, 384)
+        views, f"{OUTPUT_DIR}/ortho_axonometric.svg", positions, size=(768, 256)
     )
 
 
@@ -191,14 +201,15 @@ def generate_custom_views():
 
     views = [view_high, view_low, view_mid]
 
+    # Side by side (1x3) - each viewport is 1.0x1.0 (square)
     positions = [
-        Viewport(-0.5, -0.25, 0.3, 0.5),
-        Viewport(-0.1, -0.25, 0.3, 0.5),
-        Viewport(0.3, -0.25, 0.3, 0.5),
+        Viewport(-1.5, -0.5, 1.0, 1.0),
+        Viewport(-0.5, -0.5, 1.0, 1.0),
+        Viewport(0.5, -0.5, 1.0, 1.0),
     ]
 
     render_grid(
-        views, f"{OUTPUT_DIR}/ortho_custom_views.svg", positions, size=(768, 384)
+        views, f"{OUTPUT_DIR}/ortho_custom_views.svg", positions, size=(768, 256)
     )
 
 

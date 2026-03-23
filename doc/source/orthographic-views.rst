@@ -5,7 +5,9 @@ Orthographic Views
 
 Orthographic (parallel) projection is the foundation of technical and scientific visualization.
 Unlike perspective projection, orthographic views preserve measurements and parallel lines,
-making them ideal for diagrams, engineering drawings, and scientific publications.
+making them ideal for diagrams, engineering drawings, and scientific publications. This
+is particularly useful when visualizing simulations, as perspective projections tend to
+distort crystallographic features.
 
 This guide covers the ``View.orthographic`` API and the convenience methods for standard
 axonometric projections.
@@ -32,6 +34,9 @@ rotation via ``azimuth`` and ``tilt`` parameters:
 
    svg3d.Engine([view]).render("output.svg")
 
+For users familiar with Ovito, the ``azimuth`` and ``tilt`` properties can be thought of
+as rotations of the scene.
+
 **Parameters:**
 
 - ``scene``: List of Mesh objects to render
@@ -45,7 +50,8 @@ rotation via ``azimuth`` and ``tilt`` parameters:
 Understanding Azimuth and Tilt
 ------------------------------
 
-The scene orientation is controlled by two rotation angles applied *before* the camera:
+The scene orientation is controlled by two rotation angles applied *before* the camera
+is moved into position:
 
 **Azimuth** - Rotation around Z axis
   Controls horizontal rotation of the scene:
@@ -61,20 +67,6 @@ The scene orientation is controlled by two rotation angles applied *before* the 
   - ``tilt=0°``: No tilt (front view)
   - ``tilt=45°``: Scene tilted 45° backward
   - ``tilt=90°``: Scene tilted to top-down view
-
-.. _layered_design:
-
-Layered Design
-^^^^^^^^^^^^^^
-
-The orthographic view uses a two-layer approach:
-
-::
-
-   Scene geometry → Rz(azimuth) @ Rx(tilt) → Camera(front view) → Projection → Output
-
-This separates the *projection type* (always orthographic) from the *scene orientation*,
-making it easy to rotate the scene while maintaining a consistent view.
 
 .. _azimuth_example:
 
@@ -225,13 +217,13 @@ Larger values show more of the scene (zoom out), smaller values show less (zoom 
 
 .. image:: _static/ortho_scene_width.svg
 
-*Left to right: scene_width=2.0 (zoomed in), scene_width=4.0, scene_width=8.0 (zoomed out)*
+*Left to right: scene_width=2.0, scene_width=4.0, scene_width=8.0*
 
 **Code:**
 
 .. code-block:: python
 
-   # Zoomed in (small scene_width)
+   # Narrow scene_width
    view_close = svg3d.View.orthographic(
        scene=scene,
        scene_width=2.0,  # Close view
@@ -239,7 +231,7 @@ Larger values show more of the scene (zoom out), smaller values show less (zoom 
        tilt=35.264,
    )
 
-   # Zoomed out (large scene_width)
+   # Wide scene_width
    view_far = svg3d.View.orthographic(
        scene=scene,
        scene_width=8.0,  # Wide view
@@ -289,7 +281,7 @@ specific visual effects.
 
 .. image:: _static/ortho_custom_views.svg
 
-*Left to right: tilt=70° (top emphasis), tilt=15° (front emphasis), tilt=30° (game-style)*
+*Left to right: tilt=70°, tilt=15°, tilt=30°*
 
 Emphasizing Specific Faces
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
