@@ -91,9 +91,9 @@ Quickstart Example
    ]
 
    # Convenience views: isometric, dimetric, and trimetric (all orthographic)
-   iso = svg3d.View.isometric(scene, scene_width=3.0)
-   dim = svg3d.View.dimetric(scene, scene_width=3.0)
-   tri = svg3d.View.trimetric(scene, scene_width=3.0)
+   iso = svg3d.View.isometric(scene, scene_width=2.0)
+   dim = svg3d.View.dimetric(scene, scene_width=2.0)
+   tri = svg3d.View.trimetric(scene, scene_width=2.0)
 
    for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
        svg3d.Engine([view]).render(f"{view_type}.svg")
@@ -226,6 +226,8 @@ For full control over camera positioning, use the `orthographic` method with `th
 +-----------------+--------+------------+-------------------------------------+
 | Side view       | any    | 0°         | Horizontal view from xy plane       |
 +-----------------+--------+------------+-------------------------------------+
+
+See the :ref:`Orthographic Views <orthographic_views>` documentation for a comprehensive guide.
 
 
 .. _customshader:
