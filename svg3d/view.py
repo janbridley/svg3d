@@ -12,23 +12,17 @@ from .svg3d import Mesh
 def _rotation_matrix_x(angle_deg: float) -> np.ndarray:
     """4x4 rotation matrix around X axis."""
     c, s = np.cos(np.radians(angle_deg)), np.sin(np.radians(angle_deg))
-    return np.array([
-        [1, 0, 0, 0],
-        [0, c, -s, 0],
-        [0, s, c, 0],
-        [0, 0, 0, 1]
-    ], dtype=np.float64)
+    return np.array(
+        [[1, 0, 0, 0], [0, c, -s, 0], [0, s, c, 0], [0, 0, 0, 1]], dtype=np.float64
+    )
 
 
 def _rotation_matrix_z(angle_deg: float) -> np.ndarray:
     """4x4 rotation matrix around Z axis."""
     c, s = np.cos(np.radians(angle_deg)), np.sin(np.radians(angle_deg))
-    return np.array([
-        [c, -s, 0, 0],
-        [s, c, 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1]
-    ], dtype=np.float64)
+    return np.array(
+        [[c, -s, 0, 0], [s, c, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], dtype=np.float64
+    )
 
 
 def get_scene_rotation_matrix(azimuth: float = 0.0, tilt: float = 0.0) -> np.ndarray:
@@ -330,8 +324,14 @@ class View:
         )
 
     @classmethod
-    def isometric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0,
-                  azimuth: float = 0.0, tilt: float = 0.0):
+    def isometric(
+        cls,
+        scene,
+        scene_width: float = 2.0,
+        aspect_ratio: float = 1.0,
+        azimuth: float = 0.0,
+        tilt: float = 0.0,
+    ):
         """Create an isometric view with optional scene rotation.
 
         In an isometric projection, the scale along each coordinate axis is identical.
@@ -448,8 +448,14 @@ class View:
         )
 
     @classmethod
-    def dimetric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0,
-                 azimuth: float = 0.0, tilt: float = 0.0):
+    def dimetric(
+        cls,
+        scene,
+        scene_width: float = 2.0,
+        aspect_ratio: float = 1.0,
+        azimuth: float = 0.0,
+        tilt: float = 0.0,
+    ):
         """Create a :obj:`~.View` based on a dimetric projection.
 
         In a dimetric projection, the scale along two out of three axes is identical.
@@ -511,8 +517,14 @@ class View:
         )
 
     @classmethod
-    def trimetric(cls, scene, scene_width: float = 2.0, aspect_ratio: float = 1.0,
-                  azimuth: float = 0.0, tilt: float = 0.0):
+    def trimetric(
+        cls,
+        scene,
+        scene_width: float = 2.0,
+        aspect_ratio: float = 1.0,
+        azimuth: float = 0.0,
+        tilt: float = 0.0,
+    ):
         """Create a :obj:`~.View` based on a trimetric projection.
 
         In a trimetric projection, each axis is scaled independently. This results in a
