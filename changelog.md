@@ -3,6 +3,24 @@
 The format is based on `Keep a Changelog <http://keepachangelog.com/en/1.0.0/>` **. This
 project adheres to `Semantic Versioning <http://semver.org/spec/v2.0.0.html>`**.
 
+## v0.3.0
+
+### Changed
+
+- **Breaking**: `View.orthographic` now uses `theta` (azimuthal angle) and `elevation`
+  parameters instead of `phi` and `theta` (elevation). The new `theta` is a camera
+  rotation in the xy plane, and `elevation` is the angle from the xy plane toward z.
+- **Breaking**: `View.orthographic` now uses `scene_width` and `aspect_ratio` instead of
+  `width` and `height`.
+- **Breaking**: `View.isometric`, `View.dimetric`, and `View.trimetric` now use true
+  orthographic projection. They accept `scene_width` and `aspect_ratio` parameters
+  instead of `fov` and `distance`.
+- `View.dimetric` and `View.trimetric` now use correct axonometric projection angles.
+
+### Added
+
+- `get_orthographic_matrix` function for creating true orthographic projection matrices.
+
 ## v0.2.1
 
 ### Fixed

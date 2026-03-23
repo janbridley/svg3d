@@ -66,7 +66,7 @@ The package can also be built from source:
 Quickstart Example
 ==================
 
-`svg3d` provides convenience `View` options for standard rendering perspectives - isometric, dimetric, and trimetric. Shapes can be easily created from coxeter objects, or from raw mesh data.
+`svg3d` provides convenience `View` options for standard rendering perspectives - isometric, dimetric, and trimetric. All three use true orthographic projection with configurable view volume. Shapes can be easily created from coxeter objects, or from raw mesh data.
 
 .. code-block:: python
 
@@ -74,7 +74,7 @@ Quickstart Example
    import svg3d
 
    style = {
-       "fill": "#00B2A6",
+       "fill": "#71618D",
        "fill_opacity": "0.85",
        "stroke": "black",
        "stroke_linejoin": "round",
@@ -90,10 +90,10 @@ Quickstart Example
        )
    ]
 
-   # Convenience views: isometric, dimetric, and trimetric
-   iso = svg3d.View.isometric(scene, fov=1.0)
-   dim = svg3d.View.dimetric(scene, fov=1.0)
-   tri = svg3d.View.trimetric(scene, fov=1.0)
+   # Convenience views: isometric, dimetric, and trimetric (all orthographic)
+   iso = svg3d.View.isometric(scene, scene_width=2.0)
+   dim = svg3d.View.dimetric(scene, scene_width=2.0)
+   tri = svg3d.View.trimetric(scene, scene_width=2.0)
 
    for view, view_type in zip([iso, dim, tri], ["iso", "dim", "tri"]):
        svg3d.Engine([view]).render(f"{view_type}.svg")
@@ -182,6 +182,52 @@ In addition to convenience methods, `svg3d` allows full control over the viewpor
 Running the code above generates the following image:
 
 .. image:: https://raw.githubusercontent.com/janbridley/svg3d/refs/heads/main/doc/source/_static/cube-wireframe.svg
+
+
+.. _orthographic:
+
+Orthographic Views
+==================
+
+For full control over camera positioning, use the `orthographic` method with `theta` (azimuthal angle) and `elevation` parameters:
+
+.. code-block:: python
+
+   import svg3d
+
+   # Create an orthographic view with custom camera angles
+   view = svg3d.View.orthographic(
+       scene=scene,
+       scene_width=4.0,        # Width of view volume
+       aspect_ratio=1.0,       # Width/height ratio
+       theta=45.0,             # Azimuthal angle (rotation in xy plane)
+       elevation=35.264,       # Angle from xy plane (35.264° is isometric)
+   )
+
+   svg3d.Engine([view]).render("custom_view.svg")
+
+**Parameters:**
+
+- ``theta``: Azimuthal angle in degrees (rotation in xy plane). 0° views from +x direction, 90° from +y.
+- ``elevation``: Angle from xy plane in degrees. 0° is horizontal, 90° is top-down.
+- ``scene_width``: Width of the view volume in world units.
+- ``aspect_ratio``: Width/height ratio of the viewport.
+
+**Common configurations:**
+
++-----------------+--------+------------+-------------------------------------+
+| View Type       | theta  | elevation  | Description                         |
++=================+========+============+=====================================+
+| Isometric       | 45°    | 35.264°    | All axes equally foreshortened      |
++-----------------+--------+------------+-------------------------------------+
+| Dimetric        | 45°    | 20.705°    | Two axes equally foreshortened      |
++-----------------+--------+------------+-------------------------------------+
+| Top-down        | any    | 90°        | Looking straight down (+z)          |
++-----------------+--------+------------+-------------------------------------+
+| Side view       | any    | 0°         | Horizontal view from xy plane       |
++-----------------+--------+------------+-------------------------------------+
+
+See the :ref:`Orthographic Views <orthographic_views>` documentation for a comprehensive guide.
 
 
 .. _customshader:

@@ -34,6 +34,7 @@
    installation
    quickstart
    usage-example
+   orthographic-views
    custom-shaders
 
 

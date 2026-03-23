@@ -205,6 +205,20 @@ class DiffuseShader(Shader):
         """
         return cls(base_style={"fill": base_color}, light_direction=light_direction)
 
+    @classmethod
+    def from_view(cls, view, base_style, absorbance=0.6):
+        """Create DiffuseShader with camera-relative lighting."""
+        return cls(
+            base_style=base_style,
+            light_direction=view.camera_light_direction,
+            absorbance=absorbance,
+        )
+
+    @classmethod
+    def from_view_and_color(cls, view, base_color, absorbance=0.6):
+        """Create DiffuseShader with camera-relative lighting from color."""
+        return cls.from_view(view, {"fill": base_color}, absorbance)
+
     def __call__(self, face_index: int, mesh: Mesh) -> dict:
         """Compute the shaded style for a face in a mesh.
 
@@ -275,3 +289,20 @@ class DiffuseShader(Shader):
     @base_color.setter
     def base_color(self, base_color):
         self._base_color = base_color
+
+
+class GouraudShader(DiffuseShader):
+    """Gouraud shader (currently stubbed to flat shading).
+
+    Full gradient-based implementation requires architectural changes.
+    Accepts gradient_resolution for API compatibility.
+    """
+
+    def __init__(
+        self,
+        base_style,
+        light_direction=DEFAULT_LIGHT,
+        absorbance=0.6,
+        gradient_resolution=10,
+    ):
+        super().__init__(base_style, light_direction, absorbance)
