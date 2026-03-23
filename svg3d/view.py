@@ -47,9 +47,14 @@ def get_scene_rotation_matrix(azimuth: float = 0.0, tilt: float = 0.0) -> np.nda
 
 
 def _get_camera_light_direction(look_at_matrix: np.ndarray) -> np.ndarray:
-    """Extract light direction from camera's look_at matrix."""
-    camera_forward = look_at_matrix[:3, 2]
-    light_direction = -camera_forward
+    """Extract light direction for camera-relative lighting.
+
+    For scene rotation R, mesh normals are in mesh space (not transformed).
+    Camera-relative light in mesh space is R^T @ [0, 0, 1], which is row 2
+    of the rotation part of the combined look_at matrix.
+    """
+    # Row 2 of the rotation part gives R^T @ [0, 0, 1]
+    light_direction = look_at_matrix[2, :3]
     norm = np.linalg.norm(light_direction)
     return light_direction / norm if norm > 0 else light_direction
 

@@ -208,9 +208,11 @@ class DiffuseShader(Shader):
     @classmethod
     def from_view(cls, view, base_style, absorbance=0.6):
         """Create DiffuseShader with camera-relative lighting."""
-        return cls(base_style=base_style,
-                   light_direction=view.camera_light_direction,
-                   absorbance=absorbance)
+        return cls(
+            base_style=base_style,
+            light_direction=view.camera_light_direction,
+            absorbance=absorbance,
+        )
 
     @classmethod
     def from_view_and_color(cls, view, base_color, absorbance=0.6):
@@ -295,6 +297,12 @@ class GouraudShader(DiffuseShader):
     Full gradient-based implementation requires architectural changes.
     Accepts gradient_resolution for API compatibility.
     """
-    def __init__(self, base_style, light_direction=DEFAULT_LIGHT,
-                 absorbance=0.6, gradient_resolution=10):
+
+    def __init__(
+        self,
+        base_style,
+        light_direction=DEFAULT_LIGHT,
+        absorbance=0.6,
+        gradient_resolution=10,
+    ):
         super().__init__(base_style, light_direction, absorbance)
