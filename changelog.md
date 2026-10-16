@@ -8,6 +8,7 @@ project adheres to `Semantic Versioning <http://semver.org/spec/v2.0.0.html>`**.
 ### Fixed
 
 - Axonometric projections (`isometric`, `dimetric`, `trimetric`) are now exact (#28)
+- `Mesh` objects now gracefully handle degenerate meshes (#29)
 
 ## v0.2.1
 
