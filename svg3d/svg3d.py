@@ -32,6 +32,10 @@ EXAMPLE_STYLE = {
 
 
 def _pad_arrays(arrays):
+    # An empty mesh has no faces to pad; preserve the (faces, verts, xyz) layout.
+    if len(arrays) == 0:
+        return np.zeros((0, 0, 3))
+
     # Find the length of the longest array
     max_length = max(len(arr) for arr in arrays)
 
@@ -50,8 +54,7 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
         shader: Callable[[int, Self], dict] | None = None,
         circle_radius: float = 0.0,
     ):
-        self._faces = _pad_arrays(faces)
-        self._compute_normals()
+        self.faces = faces
         self._shader = shader
         self._circle_radius = circle_radius
 
@@ -62,7 +65,7 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
 
     @faces.setter
     def faces(self, faces: list[np.ndarray]):
-        self._faces = faces
+        self._faces = _pad_arrays(faces)
         self._compute_normals()
 
     @property
@@ -89,6 +92,11 @@ class Mesh:  # TODO: rename to PolygonMesh, create Object? base class, and add S
         return self._normals
 
     def _compute_normals(self):
+        # Faces with fewer than 3 vertices (e.g. wireframe line segments) get 0 normals.
+        if len(self.faces) == 0 or self.faces.shape[1] < 3:
+            self._normals = np.zeros((len(self.faces), 3))
+            return
+
         face_simplices = self.faces[:, :3]
 
         # Convert each simplex (3 points) into two edge vectors (each 2 points)
@@ -252,6 +260,8 @@ class Engine:
 
     def _create_group(self, drawing, projection, viewport, mesh):
         faces = mesh.faces
+        if len(faces) == 0:
+            return drawing.g()
         shader = mesh.shader or (lambda face_index, mesh: {})
         default_style = {}
 
@@ -318,8 +328,13 @@ class Engine:
         return group
 
     def _sort_back_to_front(self, faces):
-        z_centroids = -np.sum(faces[:, :, 2], axis=1)
-        return np.argsort(z_centroids)
+        # Exclude padding vertices before averaging so centroid sorting is correct.
+        is_padding = np.all(faces[:, 1:, :] == faces[:, :1, :], axis=2)
+        weights = ~np.pad(is_padding, ((0, 0), (1, 0)))
+        z_centroids = -(
+            np.sum(faces[:, :, 2] * weights, axis=1) / np.sum(weights, axis=1)
+        )
+        return np.argsort(z_centroids, kind="stable")
 
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
